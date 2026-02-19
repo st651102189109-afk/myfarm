@@ -3,33 +3,43 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SmartFarm Cloud Control</title>
+    <title>SmartFarm Pro Cloud</title>
     <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js"></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;500&display=swap');
         :root { --primary: #2e7d32; --secondary: #0288d1; --red: #d32f2f; --bg: #f1f5f9; }
-        body { font-family: 'Kanit', sans-serif; margin: 0; background: var(--bg); color: #334155; padding-bottom: 100px; }
-        header { background: var(--primary); color: white; padding: 15px 20px 40px 20px; border-radius: 0 0 25px 25px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); }
+        body { font-family: 'Kanit', sans-serif; margin: 0; background: var(--bg); padding-bottom: 100px; }
+        header { background: var(--primary); color: white; padding: 15px 20px 40px 20px; border-radius: 0 0 25px 25px; }
         .header-info { display: flex; justify-content: space-between; align-items: center; }
         .status-badge { background: rgba(0,0,0,0.2); padding: 4px 12px; border-radius: 15px; font-size: 0.8rem; display: inline-flex; align-items: center; margin-top: 8px; }
         .status-dot { height: 8px; width: 8px; background-color: #94a3b8; border-radius: 50%; margin-right: 8px; }
         .online { background-color: #4ade80; box-shadow: 0 0 8px #4ade80; }
         .container { max-width: 500px; margin: 0 auto; padding: 0 12px; }
+        .tab-content { display: none; }
+        .tab-content.active { display: block; }
         .sensor-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; margin-top: -20px; margin-bottom: 20px; }
         .sensor-card { background: white; padding: 12px 4px; border-radius: 15px; text-align: center; box-shadow: 0 4px 12px rgba(0,0,0,0.08); }
-        .sensor-card i { font-size: 1rem; margin-bottom: 5px; }
-        .sensor-card p { margin: 0; font-size: 0.7rem; color: #64748b; }
-        .sensor-card .val { font-size: 1rem; font-weight: 500; color: #1e293b; display: block; }
-        .panel { background: white; border-radius: 18px; padding: 18px; margin-bottom: 15px; box-shadow: 0 2px 8px rgba(0,0,0,0.04); border-top: 4px solid var(--primary); }
+        .sensor-card i { font-size: 1rem; }
+        .sensor-card .val { font-size: 1rem; font-weight: 500; display: block; }
+        .panel { background: white; border-radius: 18px; padding: 18px; margin-bottom: 15px; border-top: 4px solid var(--primary); }
         .title { font-size: 1rem; font-weight: 500; margin-bottom: 12px; display: flex; align-items: center; gap: 8px; }
         .row { display: flex; justify-content: space-between; align-items: center; padding: 10px 0; border-bottom: 1px solid #f1f5f9; }
-        .input-group { display: flex; align-items: center; gap: 5px; font-size: 0.85rem; }
-        input[type="number"] { width: 40px; border: 1px solid #e2e8f0; border-radius: 8px; padding: 5px; text-align: center; font-family: 'Kanit'; background: #f8fafc; }
-        .btn-manual { width: 100%; padding: 14px; border-radius: 12px; border: none; font-family: 'Kanit'; font-size: 1rem; font-weight: 500; cursor: pointer; margin-top: 12px; }
+        input[type="time"], input[type="number"] { border: 1px solid #e2e8f0; border-radius: 8px; padding: 5px; font-family: 'Kanit'; }
+        .btn-manual { width: 100%; padding: 14px; border-radius: 12px; border: none; font-weight: 500; cursor: pointer; margin-top: 12px; }
         .btn-on { background: #6ab04c; color: white; }
         .btn-stop { background: var(--red); color: white; }
+        .bottom-nav { position: fixed; bottom: 0; left: 0; right: 0; background: white; display: flex; padding: 12px; border-top: 1px solid #e2e8f0; }
+        .nav-link { flex: 1; text-align: center; border: none; background: none; color: #94a3b8; cursor: pointer; }
+        .nav-link.active { color: var(--primary); font-weight: 500; }
+        /* สวิตช์เปิด/ปิด Auto */
+        .switch { position: relative; width: 44px; height: 22px; }
+        .switch input { opacity: 0; width: 0; height: 0; }
+        .slider { position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0; background-color: #cbd5e1; transition: .4s; border-radius: 20px; }
+        .slider:before { position: absolute; content: ""; height: 16px; width: 16px; left: 3px; bottom: 3px; background-color: white; transition: .4s; border-radius: 50%; }
+        input:checked + .slider { background-color: var(--primary); }
+        input:checked + .slider:before { transform: translateX(22px); }
     </style>
 </head>
 <body>
@@ -37,92 +47,92 @@
 <header>
     <div class="header-info">
         <div>
-            <h3 style="margin:0; font-size: 1.4rem;"><i class="fas fa-seedling"></i> SmartFarm Cloud</h3>
-            <div class="status-badge"><span class="status-dot" id="dot"></span> <span id="status-text">Connecting Firebase...</span></div>
+            <h3 style="margin:0;"><i class="fas fa-seedling"></i> SmartFarm Cloud</h3>
+            <div class="status-badge"><span class="status-dot" id="dot"></span> <span id="status-text">Connecting...</span></div>
         </div>
     </div>
 </header>
 
-<div class="container">
-    <div class="sensor-grid">
-        <div class="sensor-card"><i class="fas fa-thermometer-half" style="color:#ef4444"></i><p>Temp</p><span id="t-v" class="val">--</span></div>
-        <div class="sensor-card"><i class="fas fa-tint" style="color:#0ea5e9"></i><p>Humi</p><span id="h-v" class="val">--</span></div>
-        <div class="sensor-card"><i class="fas fa-vial" style="color:#22c55e"></i><p>Soil A</p><span id="sa-v" class="val">--</span></div>
-        <div class="sensor-card"><i class="fas fa-vial" style="color:#10b981"></i><p>Soil B</p><span id="sb-v" class="val">--</span></div>
-    </div>
+<div class="container" style="margin-top:10px;">
+    <div id="tab-main" class="tab-content active">
+        <div class="sensor-grid">
+            <div class="sensor-card"><i class="fas fa-thermometer-half" style="color:#ef4444"></i><p>Temp</p><span id="t-v" class="val">--</span></div>
+            <div class="sensor-card"><i class="fas fa-tint" style="color:#0ea5e9"></i><p>Humi</p><span id="h-v" class="val">--</span></div>
+            <div class="sensor-card"><i class="fas fa-vial" style="color:#22c55e"></i><p>Soil A</p><span id="sa-v" class="val">--</span></div>
+            <div class="sensor-card"><i class="fas fa-vial" style="color:#10b981"></i><p>Soil B</p><span id="sb-v" class="val">--</span></div>
+        </div>
 
-    <div class="panel">
-        <div class="title" style="color:var(--primary);"><i class="fas fa-water"></i> ปั๊มน้ำ A</div>
-        <div class="row" style="border:none;">
-            <span class="label">ระยะเวลารดน้ำ:</span>
-            <div class="input-group">
-                <input type="number" id="man-m-a" value="1"> ม. <input type="number" id="man-s-a" value="0"> ว.
+        <div class="title"><i class="fas fa-robot"></i> ตั้งค่าอัตโนมัติ (Sync to Device)</div>
+        <div class="panel">
+            <div class="title" style="color:var(--primary);">ปั๊มน้ำ A</div>
+            <div class="row">
+                <span>เช้า</span>
+                <input type="time" id="a-t1" onchange="saveAuto('A')"> <input type="number" id="a-s1" placeholder="วินาที" onchange="saveAuto('A')">
+            </div>
+            <div class="row">
+                <span>เย็น</span>
+                <input type="time" id="a-t2" onchange="saveAuto('A')"> <input type="number" id="a-s2" placeholder="วินาที" onchange="saveAuto('A')">
+            </div>
+            <div class="row" style="border:none;">
+                <span>เปิดระบบ</span>
+                <label class="switch"><input type="checkbox" id="sw-a" onchange="saveAuto('A')"><span class="slider"></span></label>
             </div>
         </div>
-        <button id="btn-a" class="btn-manual btn-on" onclick="controlPump('A')"><i class="fas fa-play"></i> เริ่มทำงาน</button>
     </div>
 
-    <div class="panel" style="border-top-color: var(--secondary);">
-        <div class="title" style="color:var(--secondary);"><i class="fas fa-water"></i> ปั๊มน้ำ B</div>
-        <div class="row" style="border:none;">
-            <span class="label">ระยะเวลารดน้ำ:</span>
-            <div class="input-group">
-                <input type="number" id="man-m-b" value="1"> ม. <input type="number" id="man-s-b" value="0"> ว.
+    <div id="tab-manual" class="tab-content">
+        <div class="panel">
+            <div class="title">สั่งงานด้วยมือ (ปั๊ม A)</div>
+            <div class="row">
+                <span>ระยะเวลา:</span>
+                <div><input type="number" id="man-m-a" value="1"> น. <input type="number" id="man-s-a" value="0"> ว.</div>
             </div>
+            <button id="btn-a" class="btn-manual btn-on" onclick="controlPump('A')">เริ่มทำงาน</button>
         </div>
-        <button id="btn-b" class="btn-manual btn-on" onclick="controlPump('B')"><i class="fas fa-play"></i> เริ่มทำงาน</button>
-    </div>
+        </div>
 </div>
 
+<nav class="bottom-nav">
+    <button class="nav-link active" onclick="switchTab('tab-main', this)"><i class="fas fa-home"></i><br>Home</button>
+    <button class="nav-link" onclick="switchTab('tab-manual', this)"><i class="fas fa-faucet"></i><br>Manual</button>
+</nav>
+
 <script>
-    // --- ตั้งค่า Firebase (ข้อมูลเดิมของคุณ) ---
-    const firebaseConfig = {
-        databaseURL: "https://smartfarmlv1-default-rtdb.asia-southeast1.firebasedatabase.app"
-    };
+    const firebaseConfig = { databaseURL: "https://smartfarmlv1-default-rtdb.asia-southeast1.firebasedatabase.app" };
     firebase.initializeApp(firebaseConfig);
     const db = firebase.database();
 
-    let active = { A: false, B: false };
+    function switchTab(id, btn) {
+        document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
+        document.querySelectorAll('.nav-link').forEach(el => el.classList.remove('active'));
+        document.getElementById(id).classList.add('active'); btn.classList.add('active');
+    }
 
-    // ดึงค่าเซ็นเซอร์จาก Firebase
-    db.ref("sensor").on("value", (snapshot) => {
-        const d = snapshot.val();
-        if(d) {
-            document.getElementById('t-v').innerText = d.temp.toFixed(1) + "°";
-            document.getElementById('h-v').innerText = d.hum.toFixed(0) + "%";
-            document.getElementById('sa-v').innerText = d.soilA + "%";
-            document.getElementById('sb-v').innerText = d.soilB + "%";
+    // ดึงค่าจาก Firebase มาแสดง
+    db.ref().on("value", (snapshot) => {
+        const data = snapshot.val();
+        if(data.sensor) {
+            document.getElementById('t-v').innerText = data.sensor.temp.toFixed(1);
+            document.getElementById('h-v').innerText = data.sensor.hum.toFixed(0);
+            document.getElementById('sa-v').innerText = data.sensor.soilA;
+            document.getElementById('sb-v').innerText = data.sensor.soilB;
             document.getElementById('dot').className = "status-dot online";
             document.getElementById('status-text').innerText = "Cloud Online";
         }
     });
 
-    // สั่งงานปั๊มผ่าน Firebase
     function controlPump(id) {
-        const btn = document.getElementById(`btn-${id.toLowerCase()}`);
-        if (!active[id]) {
-            let m = parseInt(document.getElementById(`man-m-${id.toLowerCase()}`).value) || 0;
-            let s = parseInt(document.getElementById(`man-s-${id.toLowerCase()}`).value) || 0;
-            let total = (m * 60) + s;
-            if (total <= 0) return;
-
-            active[id] = true;
-            btn.innerHTML = '<i class="fas fa-stop"></i> หยุดทำงาน'; 
-            btn.className = "btn-manual btn-stop";
-            
-            // เขียนคำสั่งลง Firebase
-            db.ref("control/pump" + id).set({ run: true, duration: total });
-        } else {
-            db.ref("control/pump" + id).set({ run: false, duration: 0 });
-            resetUI(id);
-        }
+        let m = parseInt(document.getElementById(`man-m-${id.toLowerCase()}`).value) || 0;
+        let s = parseInt(document.getElementById(`man-s-${id.toLowerCase()}`).value) || 0;
+        let total = (m * 60) + s;
+        db.ref("control/pump" + id).set({ run: true, duration: total });
     }
 
-    function resetUI(id) {
-        const btn = document.getElementById(`btn-${id.toLowerCase()}`);
-        btn.innerHTML = '<i class="fas fa-play"></i> เริ่มทำงาน'; 
-        btn.className = "btn-manual btn-on";
-        active[id] = false;
+    function saveAuto(p) {
+        const en = document.getElementById(`sw-${p.toLowerCase()}`).checked;
+        const t1 = document.getElementById(`${p.toLowerCase()}-t1`).value;
+        const s1 = document.getElementById(`${p.toLowerCase()}-s1`).value;
+        db.ref("auto/" + p).set({ enabled: en, time1: t1, dur1: s1 });
     }
 </script>
 </body>
