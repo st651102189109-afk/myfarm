@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SmartFarm Cloud Control</title>
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        /* (Copy CSS ทั้งหมดจากโค้ดเดิมของคุณมาใส่ตรงนี้ได้เลย ผมละไว้เพื่อความกระชับ) */
+        @import url('https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;500&display=swap');
+        :root { --primary: #2e7d32; --secondary: #0288d1; --bg: #f1f5f9; }
+        body { font-family: 'Kanit', sans-serif; margin: 0; background: var(--bg); padding-bottom: 100px; }
+        header { background: var(--primary); color: white; padding: 15px 20px 40px 20px; border-radius: 0 0 25px 25px; }
+        .container { max-width: 500px; margin: 0 auto; padding: 0 12px; }
+        .sensor-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; margin-top: -20px; }
+        .sensor-card { background: white; padding: 12px 4px; border-radius: 15px; text-align: center; box-shadow: 0 4px 12px rgba(0,0,0,0.08); }
+        .panel { background: white; border-radius: 18px; padding: 18px; margin-bottom: 15px; border-top: 4px solid var(--primary); }
+        /* ... สไตล์อื่นๆ เหมือนเดิม ... */
+    </style>
+</head>
+<body>
+    <script>
+        // --- ตั้งค่า Firebase (ใช้ข้อมูลของคุณ) ---
+        const firebaseConfig = {
+            databaseURL: "https://smartfarmlv1-default-rtdb.asia-southeast1.firebasedatabase.app"
+        };
+        firebase.initializeApp(firebaseConfig);
+        const db = firebase.database();
+
+        // ดึงข้อมูลเซ็นเซอร์จาก Firebase มาโชว์ในเว็บ
+        db.ref("sensor").on("value", (snapshot) => {
+            const data = snapshot.val();
+            document.getElementById('t-v').innerText = data.temp.toFixed(1) + "°";
+            document.getElementById('h-v').innerText = data.hum.toFixed(0) + "%";
+            // ... อัปเดตค่าอื่นๆ ตามโครงสร้าง Firebase ของคุณ ...
+        });
+
+        // สั่งงานรดน้ำ (เขียนค่าลง Firebase แล้วให้ ESP32 คอยอ่าน)
+        function controlPump(id) {
+            let sec = 60; // ตัวอย่าง 60 วินาที
+            db.ref("control/" + id).set({
+                run: true,
+                duration: sec,
+                timestamp: Date.now()
+            });
+        }
+    </script>
+</body>
+</html>
