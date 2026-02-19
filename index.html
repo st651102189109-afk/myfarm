@@ -8,44 +8,122 @@
     <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js"></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <style>
-        /* (Copy CSS ทั้งหมดจากโค้ดเดิมของคุณมาใส่ตรงนี้ได้เลย ผมละไว้เพื่อความกระชับ) */
         @import url('https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;500&display=swap');
-        :root { --primary: #2e7d32; --secondary: #0288d1; --bg: #f1f5f9; }
-        body { font-family: 'Kanit', sans-serif; margin: 0; background: var(--bg); padding-bottom: 100px; }
-        header { background: var(--primary); color: white; padding: 15px 20px 40px 20px; border-radius: 0 0 25px 25px; }
+        :root { --primary: #2e7d32; --secondary: #0288d1; --red: #d32f2f; --bg: #f1f5f9; }
+        body { font-family: 'Kanit', sans-serif; margin: 0; background: var(--bg); color: #334155; padding-bottom: 100px; }
+        header { background: var(--primary); color: white; padding: 15px 20px 40px 20px; border-radius: 0 0 25px 25px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); }
+        .header-info { display: flex; justify-content: space-between; align-items: center; }
+        .status-badge { background: rgba(0,0,0,0.2); padding: 4px 12px; border-radius: 15px; font-size: 0.8rem; display: inline-flex; align-items: center; margin-top: 8px; }
+        .status-dot { height: 8px; width: 8px; background-color: #94a3b8; border-radius: 50%; margin-right: 8px; }
+        .online { background-color: #4ade80; box-shadow: 0 0 8px #4ade80; }
         .container { max-width: 500px; margin: 0 auto; padding: 0 12px; }
-        .sensor-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; margin-top: -20px; }
+        .sensor-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; margin-top: -20px; margin-bottom: 20px; }
         .sensor-card { background: white; padding: 12px 4px; border-radius: 15px; text-align: center; box-shadow: 0 4px 12px rgba(0,0,0,0.08); }
-        .panel { background: white; border-radius: 18px; padding: 18px; margin-bottom: 15px; border-top: 4px solid var(--primary); }
-        /* ... สไตล์อื่นๆ เหมือนเดิม ... */
+        .sensor-card i { font-size: 1rem; margin-bottom: 5px; }
+        .sensor-card p { margin: 0; font-size: 0.7rem; color: #64748b; }
+        .sensor-card .val { font-size: 1rem; font-weight: 500; color: #1e293b; display: block; }
+        .panel { background: white; border-radius: 18px; padding: 18px; margin-bottom: 15px; box-shadow: 0 2px 8px rgba(0,0,0,0.04); border-top: 4px solid var(--primary); }
+        .title { font-size: 1rem; font-weight: 500; margin-bottom: 12px; display: flex; align-items: center; gap: 8px; }
+        .row { display: flex; justify-content: space-between; align-items: center; padding: 10px 0; border-bottom: 1px solid #f1f5f9; }
+        .input-group { display: flex; align-items: center; gap: 5px; font-size: 0.85rem; }
+        input[type="number"] { width: 40px; border: 1px solid #e2e8f0; border-radius: 8px; padding: 5px; text-align: center; font-family: 'Kanit'; background: #f8fafc; }
+        .btn-manual { width: 100%; padding: 14px; border-radius: 12px; border: none; font-family: 'Kanit'; font-size: 1rem; font-weight: 500; cursor: pointer; margin-top: 12px; }
+        .btn-on { background: #6ab04c; color: white; }
+        .btn-stop { background: var(--red); color: white; }
     </style>
 </head>
 <body>
-    <script>
-        // --- ตั้งค่า Firebase (ใช้ข้อมูลของคุณ) ---
-        const firebaseConfig = {
-            databaseURL: "https://smartfarmlv1-default-rtdb.asia-southeast1.firebasedatabase.app"
-        };
-        firebase.initializeApp(firebaseConfig);
-        const db = firebase.database();
 
-        // ดึงข้อมูลเซ็นเซอร์จาก Firebase มาโชว์ในเว็บ
-        db.ref("sensor").on("value", (snapshot) => {
-            const data = snapshot.val();
-            document.getElementById('t-v').innerText = data.temp.toFixed(1) + "°";
-            document.getElementById('h-v').innerText = data.hum.toFixed(0) + "%";
-            // ... อัปเดตค่าอื่นๆ ตามโครงสร้าง Firebase ของคุณ ...
-        });
+<header>
+    <div class="header-info">
+        <div>
+            <h3 style="margin:0; font-size: 1.4rem;"><i class="fas fa-seedling"></i> SmartFarm Cloud</h3>
+            <div class="status-badge"><span class="status-dot" id="dot"></span> <span id="status-text">Connecting Firebase...</span></div>
+        </div>
+    </div>
+</header>
 
-        // สั่งงานรดน้ำ (เขียนค่าลง Firebase แล้วให้ ESP32 คอยอ่าน)
-        function controlPump(id) {
-            let sec = 60; // ตัวอย่าง 60 วินาที
-            db.ref("control/" + id).set({
-                run: true,
-                duration: sec,
-                timestamp: Date.now()
-            });
+<div class="container">
+    <div class="sensor-grid">
+        <div class="sensor-card"><i class="fas fa-thermometer-half" style="color:#ef4444"></i><p>Temp</p><span id="t-v" class="val">--</span></div>
+        <div class="sensor-card"><i class="fas fa-tint" style="color:#0ea5e9"></i><p>Humi</p><span id="h-v" class="val">--</span></div>
+        <div class="sensor-card"><i class="fas fa-vial" style="color:#22c55e"></i><p>Soil A</p><span id="sa-v" class="val">--</span></div>
+        <div class="sensor-card"><i class="fas fa-vial" style="color:#10b981"></i><p>Soil B</p><span id="sb-v" class="val">--</span></div>
+    </div>
+
+    <div class="panel">
+        <div class="title" style="color:var(--primary);"><i class="fas fa-water"></i> ปั๊มน้ำ A</div>
+        <div class="row" style="border:none;">
+            <span class="label">ระยะเวลารดน้ำ:</span>
+            <div class="input-group">
+                <input type="number" id="man-m-a" value="1"> ม. <input type="number" id="man-s-a" value="0"> ว.
+            </div>
+        </div>
+        <button id="btn-a" class="btn-manual btn-on" onclick="controlPump('A')"><i class="fas fa-play"></i> เริ่มทำงาน</button>
+    </div>
+
+    <div class="panel" style="border-top-color: var(--secondary);">
+        <div class="title" style="color:var(--secondary);"><i class="fas fa-water"></i> ปั๊มน้ำ B</div>
+        <div class="row" style="border:none;">
+            <span class="label">ระยะเวลารดน้ำ:</span>
+            <div class="input-group">
+                <input type="number" id="man-m-b" value="1"> ม. <input type="number" id="man-s-b" value="0"> ว.
+            </div>
+        </div>
+        <button id="btn-b" class="btn-manual btn-on" onclick="controlPump('B')"><i class="fas fa-play"></i> เริ่มทำงาน</button>
+    </div>
+</div>
+
+<script>
+    // --- ตั้งค่า Firebase (ข้อมูลเดิมของคุณ) ---
+    const firebaseConfig = {
+        databaseURL: "https://smartfarmlv1-default-rtdb.asia-southeast1.firebasedatabase.app"
+    };
+    firebase.initializeApp(firebaseConfig);
+    const db = firebase.database();
+
+    let active = { A: false, B: false };
+
+    // ดึงค่าเซ็นเซอร์จาก Firebase
+    db.ref("sensor").on("value", (snapshot) => {
+        const d = snapshot.val();
+        if(d) {
+            document.getElementById('t-v').innerText = d.temp.toFixed(1) + "°";
+            document.getElementById('h-v').innerText = d.hum.toFixed(0) + "%";
+            document.getElementById('sa-v').innerText = d.soilA + "%";
+            document.getElementById('sb-v').innerText = d.soilB + "%";
+            document.getElementById('dot').className = "status-dot online";
+            document.getElementById('status-text').innerText = "Cloud Online";
         }
-    </script>
+    });
+
+    // สั่งงานปั๊มผ่าน Firebase
+    function controlPump(id) {
+        const btn = document.getElementById(`btn-${id.toLowerCase()}`);
+        if (!active[id]) {
+            let m = parseInt(document.getElementById(`man-m-${id.toLowerCase()}`).value) || 0;
+            let s = parseInt(document.getElementById(`man-s-${id.toLowerCase()}`).value) || 0;
+            let total = (m * 60) + s;
+            if (total <= 0) return;
+
+            active[id] = true;
+            btn.innerHTML = '<i class="fas fa-stop"></i> หยุดทำงาน'; 
+            btn.className = "btn-manual btn-stop";
+            
+            // เขียนคำสั่งลง Firebase
+            db.ref("control/pump" + id).set({ run: true, duration: total });
+        } else {
+            db.ref("control/pump" + id).set({ run: false, duration: 0 });
+            resetUI(id);
+        }
+    }
+
+    function resetUI(id) {
+        const btn = document.getElementById(`btn-${id.toLowerCase()}`);
+        btn.innerHTML = '<i class="fas fa-play"></i> เริ่มทำงาน'; 
+        btn.className = "btn-manual btn-on";
+        active[id] = false;
+    }
+</script>
 </body>
 </html>
