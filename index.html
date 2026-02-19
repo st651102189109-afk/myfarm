@@ -11,7 +11,7 @@
         @import url('https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;500&display=swap');
         :root { --primary: #2e7d32; --secondary: #0288d1; --red: #d32f2f; --bg: #f1f5f9; }
         body { font-family: 'Kanit', sans-serif; margin: 0; background: var(--bg); color: #334155; padding-bottom: 100px; }
-        header { background: var(--primary); color: white; padding: 15px 20px 40px 20px; border-radius: 0 0 25px 25px; }
+        header { background: var(--primary); color: white; padding: 15px 20px 40px 20px; border-radius: 0 0 25px 25px; box-shadow: 0 4px 10px rgba(0,0,0,0.1); }
         .header-info { display: flex; justify-content: space-between; align-items: center; }
         .status-badge { background: rgba(0,0,0,0.2); padding: 4px 12px; border-radius: 15px; font-size: 0.8rem; display: inline-flex; align-items: center; margin-top: 8px; }
         .status-dot { height: 8px; width: 8px; background-color: #94a3b8; border-radius: 50%; margin-right: 8px; }
@@ -19,16 +19,16 @@
         .container { max-width: 500px; margin: 0 auto; padding: 0 12px; }
         .tab-content { display: none; }
         .tab-content.active { display: block; }
-        .sensor-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; margin-top: 10px; margin-bottom: 20px; }
+        .sensor-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; margin-top: 15px; margin-bottom: 20px; }
         .sensor-card { background: white; padding: 12px 4px; border-radius: 15px; text-align: center; box-shadow: 0 4px 12px rgba(0,0,0,0.08); }
         .sensor-card i { font-size: 1rem; margin-bottom: 5px; }
-        .sensor-card .val { font-size: 1rem; font-weight: 500; display: block; }
-        .panel { background: white; border-radius: 18px; padding: 18px; margin-bottom: 15px; border-top: 4px solid var(--primary); }
+        .sensor-card .val { font-size: 1rem; font-weight: 500; display: block; color: #1e293b; }
+        .panel { background: white; border-radius: 18px; padding: 18px; margin-bottom: 15px; border-top: 4px solid var(--primary); box-shadow: 0 2px 8px rgba(0,0,0,0.05); }
         .title { font-size: 1rem; font-weight: 500; margin-bottom: 12px; display: flex; align-items: center; gap: 8px; }
         .row { display: flex; justify-content: space-between; align-items: center; padding: 10px 0; border-bottom: 1px solid #f1f5f9; }
-        input[type="time"], input[type="number"] { border: 1px solid #e2e8f0; border-radius: 8px; padding: 5px; font-family: 'Kanit'; background: #f8fafc; }
-        input[type="number"] { width: 45px; text-align: center; }
-        .btn-manual { width: 100%; padding: 14px; border-radius: 12px; border: none; font-weight: 500; cursor: pointer; margin-top: 12px; transition: 0.3s; }
+        input[type="time"], input[type="number"] { border: 1px solid #e2e8f0; border-radius: 8px; padding: 6px; font-family: 'Kanit'; background: #f8fafc; outline: none; }
+        input[type="number"] { width: 50px; text-align: center; }
+        .btn-manual { width: 100%; padding: 14px; border-radius: 12px; border: none; font-family: 'Kanit'; font-size: 1rem; font-weight: 500; cursor: pointer; margin-top: 12px; transition: all 0.3s; }
         .btn-on { background: #6ab04c; color: white; }
         .btn-stop { background: var(--red); color: white; }
         .bottom-nav { position: fixed; bottom: 0; left: 0; right: 0; background: white; display: flex; padding: 12px; border-top: 1px solid #e2e8f0; z-index: 1000; }
@@ -48,7 +48,7 @@
     <div class="header-info">
         <div>
             <h3 style="margin:0;"><i class="fas fa-seedling"></i> SmartFarm Cloud</h3>
-            <div class="status-badge"><span class="status-dot" id="dot"></span> <span id="status-text">Connecting...</span></div>
+            <div class="status-badge"><span class="status-dot" id="dot"></span> <span id="status-text">Connecting Firebase...</span></div>
         </div>
     </div>
 </header>
@@ -62,75 +62,34 @@
             <div class="sensor-card"><i class="fas fa-vial" style="color:#10b981"></i><p>Soil B</p><span id="sb-v" class="val">--</span></div>
         </div>
 
-        <div class="title"><i class="fas fa-robot"></i> ระบบอัตโนมัติ (Auto)</div>
+        <div class="title"><i class="fas fa-robot"></i> ระบบอัตโนมัติ (Auto Schedule)</div>
         
         <div class="panel">
-            <div class="title" style="color:var(--primary);">ปั๊มน้ำ A (หลัก)</div>
-            <div class="row">
-                <span><i class="fas fa-clock"></i> เวลาเริ่ม:</span>
-                <div>
-                    <input type="time" id="a-t1" onchange="saveAuto('A')"> 
-                </div>
-            </div>
-            <div class="row">
-                <span><i class="fas fa-hourglass-half"></i> ระยะเวลา:</span>
-                <div>
-                    <input type="number" id="a-m1" value="0" onchange="saveAuto('A')"> น. 
-                    <input type="number" id="a-s1" value="15" onchange="saveAuto('A')"> ว.
-                </div>
-            </div>
-            <div class="row" style="border:none;">
-                <span>เปิดใช้งานระบบ Auto</span>
-                <label class="switch"><input type="checkbox" id="sw-a" onchange="saveAuto('A')"><span class="slider"></span></label>
-            </div>
+            <div class="title" style="color:var(--primary);">ปั๊มน้ำ A</div>
+            <div class="row"><span>เวลาเริ่ม:</span><input type="time" id="a-t1" onchange="saveAuto('A')"></div>
+            <div class="row"><span>ระยะเวลา:</span><div><input type="number" id="a-m1" value="0" onchange="saveAuto('A')"> น. <input type="number" id="a-s1" value="15" onchange="saveAuto('A')"> ว.</div></div>
+            <div class="row" style="border:none;"><span>เปิดระบบ Auto</span><label class="switch"><input type="checkbox" id="sw-a" onchange="saveAuto('A')"><span class="slider"></span></label></div>
         </div>
 
         <div class="panel" style="border-top-color: var(--secondary);">
-            <div class="title" style="color:var(--secondary);">ปั๊มน้ำ B (รอง)</div>
-            <div class="row">
-                <span><i class="fas fa-clock"></i> เวลาเริ่ม:</span>
-                <div>
-                    <input type="time" id="b-t1" onchange="saveAuto('B')"> 
-                </div>
-            </div>
-            <div class="row">
-                <span><i class="fas fa-hourglass-half"></i> ระยะเวลา:</span>
-                <div>
-                    <input type="number" id="b-m1" value="0" onchange="saveAuto('B')"> น. 
-                    <input type="number" id="b-s1" value="15" onchange="saveAuto('B')"> ว.
-                </div>
-            </div>
-            <div class="row" style="border:none;">
-                <span>เปิดใช้งานระบบ Auto</span>
-                <label class="switch"><input type="checkbox" id="sw-b" onchange="saveAuto('B')"><span class="slider"></span></label>
-            </div>
+            <div class="title" style="color:var(--secondary);">ปั๊มน้ำ B</div>
+            <div class="row"><span>เวลาเริ่ม:</span><input type="time" id="b-t1" onchange="saveAuto('B')"></div>
+            <div class="row"><span>ระยะเวลา:</span><div><input type="number" id="b-m1" value="0" onchange="saveAuto('B')"> น. <input type="number" id="b-s1" value="15" onchange="saveAuto('B')"> ว.</div></div>
+            <div class="row" style="border:none;"><span>เปิดระบบ Auto</span><label class="switch"><input type="checkbox" id="sw-b" onchange="saveAuto('B')"><span class="slider"></span></label></div>
         </div>
     </div>
 
     <div id="tab-manual" class="tab-content">
         <div class="title" style="margin-top:20px;"><i class="fas fa-hand-pointer"></i> สั่งงานด้วยมือ</div>
-        
         <div class="panel">
             <div class="title">ปั๊มน้ำ A</div>
-            <div class="row" style="border:none;">
-                <span>รดน้ำนาน:</span>
-                <div>
-                    <input type="number" id="man-m-a" value="1"> น. 
-                    <input type="number" id="man-s-a" value="0"> ว.
-                </div>
-            </div>
+            <div class="row" style="border:none;"><span>กำหนดเวลา:</span><div><input type="number" id="man-m-a" value="1"> น. <input type="number" id="man-s-a" value="0"> ว.</div></div>
             <button id="btn-a" class="btn-manual btn-on" onclick="controlPump('A')">เริ่มทำงาน</button>
         </div>
 
         <div class="panel" style="border-top-color: var(--secondary);">
             <div class="title">ปั๊มน้ำ B</div>
-            <div class="row" style="border:none;">
-                <span>รดน้ำนาน:</span>
-                <div>
-                    <input type="number" id="man-m-b" value="1"> น. 
-                    <input type="number" id="man-s-b" value="0"> ว.
-                </div>
-            </div>
+            <div class="row" style="border:none;"><span>กำหนดเวลา:</span><div><input type="number" id="man-m-b" value="1"> น. <input type="number" id="man-s-b" value="0"> ว.</div></div>
             <button id="btn-b" class="btn-manual btn-on" onclick="controlPump('B')">เริ่มทำงาน</button>
         </div>
     </div>
@@ -142,12 +101,9 @@
 </nav>
 
 <script>
-    // --- ตั้งค่า Firebase ---
     const firebaseConfig = { databaseURL: "https://smartfarmlv1-default-rtdb.asia-southeast1.firebasedatabase.app" };
     firebase.initializeApp(firebaseConfig);
     const db = firebase.database();
-
-    let active = { A: false, B: false };
 
     function switchTab(id, btn) {
         document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
@@ -155,10 +111,13 @@
         document.getElementById(id).classList.add('active'); btn.classList.add('active');
     }
 
-    // ดึงค่าเซ็นเซอร์
+    // ติดตามข้อมูลจาก Firebase แบบ Real-time
     db.ref().on("value", (snapshot) => {
         const data = snapshot.val();
-        if(data && data.sensor) {
+        if(!data) return;
+
+        // 1. อัปเดตเซ็นเซอร์
+        if(data.sensor) {
             document.getElementById('t-v').innerText = data.sensor.temp.toFixed(1) + "°";
             document.getElementById('h-v').innerText = data.sensor.hum.toFixed(0) + "%";
             document.getElementById('sa-v').innerText = data.sensor.soilA + "%";
@@ -166,48 +125,48 @@
             document.getElementById('dot').className = "status-dot online";
             document.getElementById('status-text').innerText = "Cloud Online";
         }
+
+        // 2. อัปเดตปุ่มกด (ถ้าบอร์ดแจ้งว่าหยุดแล้ว ปุ่มต้องกลับเป็นสีเขียว)
+        if(data.control) {
+            updateButtonUI('A', data.control.pumpA.run);
+            updateButtonUI('B', data.control.pumpB.run);
+        }
     });
 
-    // สั่งงาน Manual (รองรับคำสั่งหยุด)
+    function updateButtonUI(id, isRunning) {
+        const btn = document.getElementById(`btn-${id.toLowerCase()}`);
+        if(isRunning) {
+            btn.innerHTML = '<i class="fas fa-stop"></i> หยุดทำงานทันที';
+            btn.className = "btn-manual btn-stop";
+        } else {
+            btn.innerHTML = '<i class="fas fa-play"></i> เริ่มทำงาน';
+            btn.className = "btn-manual btn-on";
+        }
+    }
+
     function controlPump(id) {
         const btn = document.getElementById(`btn-${id.toLowerCase()}`);
-        if (!active[id]) {
+        const isCurrentlyRunning = btn.classList.contains('btn-stop');
+
+        if (!isCurrentlyRunning) {
             let m = parseInt(document.getElementById(`man-m-${id.toLowerCase()}`).value) || 0;
             let s = parseInt(document.getElementById(`man-s-${id.toLowerCase()}`).value) || 0;
             let total = (m * 60) + s;
             if (total <= 0) return;
-
-            active[id] = true;
-            btn.innerHTML = '<i class="fas fa-stop"></i> หยุดทำงานทันที'; 
-            btn.className = "btn-manual btn-stop";
             db.ref("control/pump" + id).set({ run: true, duration: total });
         } else {
-            // คำสั่งหยุด
+            // ส่งคำสั่งหยุด
             db.ref("control/pump" + id).set({ run: false, duration: 0 });
-            resetUI(id);
         }
     }
 
-    function resetUI(id) {
-        const btn = document.getElementById(`btn-${id.toLowerCase()}`);
-        btn.innerHTML = 'เริ่มทำงาน'; 
-        btn.className = "btn-manual btn-on";
-        active[id] = false;
-    }
-
-    // บันทึกค่า Auto (นาที + วินาที)
     function saveAuto(p) {
         const en = document.getElementById(`sw-${p.toLowerCase()}`).checked;
         const t1 = document.getElementById(`${p.toLowerCase()}-t1`).value;
         const m1 = parseInt(document.getElementById(`${p.toLowerCase()}-m1`).value) || 0;
         const s1 = parseInt(document.getElementById(`${p.toLowerCase()}-s1`).value) || 0;
         const total = (m1 * 60) + s1;
-        
-        db.ref("auto/" + p).set({ 
-            enabled: en, 
-            time1: t1, 
-            dur1: total 
-        });
+        db.ref("auto/" + p).set({ enabled: en, time1: t1, dur1: total });
     }
 </script>
 </body>
