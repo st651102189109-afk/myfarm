@@ -26,18 +26,17 @@
         .tab-content { display: none; }
         .tab-content.active { display: block; }
 
-        /* Sensor Grid */
+        /* Sensor Grid 4 Columns */
         .sensor-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 6px; margin-bottom: 15px; }
         .sensor-card { background: white; padding: 8px 4px; border-radius: 12px; text-align: center; box-shadow: 0 2px 5px rgba(0,0,0,0.03); }
         .sensor-card i { font-size: 0.9rem; margin-bottom: 2px; }
         .sensor-card .val { font-size: 0.85rem; font-weight: 600; display: block; }
         .sensor-card small { color: #64748b; font-size: 0.65rem; display: block; }
 
-        /* Panel */
         .panel { background: white; border-radius: 20px; padding: 15px; margin-bottom: 12px; box-shadow: 0 4px 10px rgba(0,0,0,0.05); border-left: 5px solid var(--primary); }
         .row { display: flex; justify-content: space-between; align-items: center; padding: 10px 0; border-bottom: 1px solid #f1f5f9; }
 
-        /* Input Group */
+        /* Input Group with hh:mm placeholder logic */
         .input-group { display: flex; align-items: center; background: #f8fafc; padding: 6px 10px; border-radius: 10px; border: 1px solid #e2e8f0; }
         input[type="time"] { border: none; background: transparent; font-family: 'Kanit'; font-size: 0.85rem; outline: none; width: 85px; }
         input[type="time"]::before { content: attr(placeholder); color: #cbd5e1; font-weight: 300; margin-right: 4px; }
@@ -48,15 +47,13 @@
 
         .divider { margin: 0 6px; color: #cbd5e1; font-weight: 200; }
 
-        /* Manual Status Light */
-        .status-light { width: 10px; height: 10px; border-radius: 50%; display: inline-block; margin-right: 8px; box-shadow: 0 0 5px rgba(0,0,0,0.1); }
+        /* Light Status */
+        .status-light { width: 10px; height: 10px; border-radius: 50%; display: inline-block; margin-right: 8px; }
         .light-off { background-color: var(--red); box-shadow: 0 0 8px var(--red); }
         .light-on { background-color: var(--green); box-shadow: 0 0 8px var(--green); animation: pulse 1.5s infinite; }
-
         @keyframes pulse { 0% { opacity: 1; } 50% { opacity: 0.5; } 100% { opacity: 1; } }
 
-        /* Buttons */
-        .btn-manual { width: 100%; padding: 12px; border-radius: 12px; border: none; font-family: 'Kanit'; font-size: 0.95rem; font-weight: 500; cursor: pointer; margin-top: 10px; transition: 0.3s; }
+        .btn-manual { width: 100%; padding: 12px; border-radius: 12px; border: none; font-family: 'Kanit'; font-size: 0.95rem; font-weight: 500; cursor: pointer; margin-top: 10px; }
         .btn-on { background: var(--green); color: white; }
         .btn-stop { background: var(--red); color: white; }
 
@@ -98,7 +95,7 @@
                 <div class="input-group">
                     <input type="time" id="a-t1" placeholder="hh:mm" required onchange="saveConfig('A')">
                     <span class="divider">|</span>
-                    <input type="text" id="a-d1-input" class="dur-input" placeholder="mm:ss" onchange="saveConfig('A')">
+                    <input type="text" id="a-d1-input" class="dur-input" placeholder="mm:ss" inputmode="tel" oninput="this.value = this.value.replace(/[^0-9:]/g, '')" onchange="saveConfig('A')">
                 </div>
             </div>
             <div class="row" style="border:none;">
@@ -106,7 +103,7 @@
                 <div class="input-group">
                     <input type="time" id="a-t2" placeholder="hh:mm" required onchange="saveConfig('A')">
                     <span class="divider">|</span>
-                    <input type="text" id="a-d2-input" class="dur-input" placeholder="mm:ss" onchange="saveConfig('A')">
+                    <input type="text" id="a-d2-input" class="dur-input" placeholder="mm:ss" inputmode="tel" oninput="this.value = this.value.replace(/[^0-9:]/g, '')" onchange="saveConfig('A')">
                 </div>
             </div>
         </div>
@@ -121,7 +118,7 @@
                 <div class="input-group">
                     <input type="time" id="b-t1" placeholder="hh:mm" required onchange="saveConfig('B')">
                     <span class="divider">|</span>
-                    <input type="text" id="b-d1-input" class="dur-input" placeholder="mm:ss" onchange="saveConfig('B')">
+                    <input type="text" id="b-d1-input" class="dur-input" placeholder="mm:ss" inputmode="tel" oninput="this.value = this.value.replace(/[^0-9:]/g, '')" onchange="saveConfig('B')">
                 </div>
             </div>
             <div class="row" style="border:none;">
@@ -129,7 +126,7 @@
                 <div class="input-group">
                     <input type="time" id="b-t2" placeholder="hh:mm" required onchange="saveConfig('B')">
                     <span class="divider">|</span>
-                    <input type="text" id="b-d2-input" class="dur-input" placeholder="mm:ss" onchange="saveConfig('B')">
+                    <input type="text" id="b-d2-input" class="dur-input" placeholder="mm:ss" inputmode="tel" oninput="this.value = this.value.replace(/[^0-9:]/g, '')" onchange="saveConfig('B')">
                 </div>
             </div>
         </div>
@@ -144,7 +141,7 @@
             <div class="row" style="border:none;">
                 <span style="font-size:0.85rem;">ระบุเวลารดน้ำ</span>
                 <div class="input-group">
-                    <input type="text" id="man-dur-a" class="dur-input" placeholder="mm:ss" style="width:100px; font-size:1.1rem;">
+                    <input type="text" id="man-dur-a" class="dur-input" placeholder="mm:ss" inputmode="tel" oninput="this.value = this.value.replace(/[^0-9:]/g, '')" style="width:100px; font-size:1.1rem;">
                 </div>
             </div>
             <button id="btn-a" class="btn-manual btn-on" onclick="manualControl('A')"><i class="fas fa-play"></i> เริ่มรดน้ำ A</button>
@@ -158,7 +155,7 @@
             <div class="row" style="border:none;">
                 <span style="font-size:0.85rem;">ระบุเวลารดน้ำ</span>
                 <div class="input-group">
-                    <input type="text" id="man-dur-b" class="dur-input" placeholder="mm:ss" style="width:100px; font-size:1.1rem;">
+                    <input type="text" id="man-dur-b" class="dur-input" placeholder="mm:ss" inputmode="tel" oninput="this.value = this.value.replace(/[^0-9:]/g, '')" style="width:100px; font-size:1.1rem;">
                 </div>
             </div>
             <button id="btn-b" class="btn-manual btn-on" onclick="manualControl('B')"><i class="fas fa-play"></i> เริ่มรดน้ำ B</button>
@@ -195,8 +192,6 @@
     db.ref().on("value", (snapshot) => {
         const data = snapshot.val();
         if(!data) return;
-        
-        // เซ็นเซอร์
         if(data.sensor) {
             document.getElementById('t-v').innerText = data.sensor.temp.toFixed(1) + "°";
             document.getElementById('h-v').innerText = data.sensor.hum.toFixed(0) + "%";
@@ -205,8 +200,6 @@
             document.getElementById('dot').style.color = "#4caf50";
             document.getElementById('status-text').innerText = "Online";
         }
-        
-        // ควบคุมปั๊ม
         if(data.control) {
             updateUI('A', data.control.pumpA.run);
             updateUI('B', data.control.pumpB.run);
@@ -217,15 +210,9 @@
         const btn = document.getElementById(`btn-${p.toLowerCase()}`);
         const light = document.getElementById(`light-${p.toLowerCase()}`);
         if(btn && light) {
-            if(run) {
-                btn.innerHTML = '<i class="fas fa-stop"></i> STOP';
-                btn.className = "btn-manual btn-stop";
-                light.className = "status-light light-on";
-            } else {
-                btn.innerHTML = '<i class="fas fa-play"></i> เริ่มรดน้ำ ' + p;
-                btn.className = "btn-manual btn-on";
-                light.className = "status-light light-off";
-            }
+            btn.innerHTML = run ? '<i class="fas fa-stop"></i> STOP' : '<i class="fas fa-play"></i> เริ่มรดน้ำ ' + p;
+            btn.className = run ? "btn-manual btn-stop" : "btn-manual btn-on";
+            light.className = run ? "status-light light-on" : "status-light light-off";
         }
     }
 
