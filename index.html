@@ -19,48 +19,38 @@
         * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
         body { font-family: 'Kanit', sans-serif; margin: 0; background: var(--bg); padding-bottom: 80px; }
         
-        header { background: var(--primary); color: white; padding: 25px 20px; border-radius: 0 0 30px 30px; }
+        header { background: var(--primary); color: white; padding: 25px 20px; border-radius: 0 0 30px 30px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); }
         header h3 { margin: 0; font-size: 1.5rem; display: flex; align-items: center; gap: 10px; }
 
         .container { max-width: 500px; margin: 0 auto; padding: 15px; }
         .tab-content { display: none; }
         .tab-content.active { display: block; }
 
+        /* Sensor Grid */
         .sensor-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; margin-bottom: 20px; }
         .sensor-card { background: white; padding: 15px; border-radius: 20px; text-align: center; box-shadow: 0 2px 10px rgba(0,0,0,0.03); }
-        .sensor-card .val { font-size: 1.2rem; font-weight: 600; display: block; }
+        .sensor-card i { font-size: 1.2rem; margin-bottom: 5px; }
+        .sensor-card .val { font-size: 1.1rem; font-weight: 600; display: block; }
+        .sensor-card small { color: #64748b; font-size: 0.8rem; }
 
+        /* Panel */
         .panel { background: white; border-radius: 25px; padding: 20px; margin-bottom: 15px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); border-left: 6px solid var(--primary); }
         .row { display: flex; justify-content: space-between; align-items: center; padding: 12px 0; border-bottom: 1px solid #f1f5f9; }
 
-        /* Input Group with Placeholder Logic */
-        .input-group {
-            display: flex; align-items: center; background: #f8fafc; 
-            padding: 8px 15px; border-radius: 12px; border: 1px solid #e2e8f0;
-        }
+        /* Input Group with Placeholder */
+        .input-group { display: flex; align-items: center; background: #f8fafc; padding: 8px 15px; border-radius: 12px; border: 1px solid #e2e8f0; }
+        input[type="time"] { border: none; background: transparent; font-family: 'Kanit'; font-size: 0.95rem; outline: none; width: 105px; color: #1e293b; }
+        
+        input[type="time"]::before { content: attr(placeholder); color: #cbd5e1; font-weight: 300; margin-right: 5px; }
+        input[type="time"]:focus::before, input[type="time"]:valid::before { display: none; content: ""; }
 
-        input[type="time"] {
-            border: none; background: transparent; font-family: 'Kanit'; 
-            font-size: 0.95rem; outline: none; width: 105px; color: #1e293b;
-        }
-
-        /* เทคนิคโชว์ hh:mm จางๆ ในช่อง time */
-        input[type="time"]::before {
-            content: attr(placeholder); color: #cbd5e1; font-weight: 300; margin-right: 5px;
-        }
-        input[type="time"]:focus::before, input[type="time"]:valid::before {
-            display: none; content: "";
-        }
-
-        .dur-input {
-            border: none; background: transparent; font-family: 'Kanit'; 
-            font-size: 0.95rem; color: var(--primary); width: 75px; text-align: center; outline: none;
-        }
+        .dur-input { border: none; background: transparent; font-family: 'Kanit'; font-size: 0.95rem; color: var(--primary); width: 75px; text-align: center; outline: none; }
         .dur-input::placeholder { color: #cbd5e1; font-weight: 300; }
 
         .divider { margin: 0 10px; color: #cbd5e1; font-weight: 200; }
 
-        .btn-manual { width: 100%; padding: 15px; border-radius: 15px; border: none; font-family: 'Kanit'; font-size: 1rem; font-weight: 500; cursor: pointer; margin-top: 15px; }
+        /* Manual Controls */
+        .btn-manual { width: 100%; padding: 15px; border-radius: 15px; border: none; font-family: 'Kanit'; font-size: 1rem; font-weight: 500; cursor: pointer; margin-top: 15px; transition: 0.3s; }
         .btn-on { background: #4caf50; color: white; }
         .btn-stop { background: #f44336; color: white; }
 
@@ -86,17 +76,19 @@
 <div class="container">
     <div id="tab-auto" class="tab-content active">
         <div class="sensor-grid">
-            <div class="sensor-card"><span class="val" id="t-v">--</span><small>อุณหภูมิ</small></div>
-            <div class="sensor-card"><span class="val" id="h-v">--</span><small>ความชื้น</small></div>
+            <div class="sensor-card"><i class="fas fa-thermometer-half" style="color:#ef4444"></i><span class="val" id="t-v">--</span><small>อุณหภูมิ</small></div>
+            <div class="sensor-card"><i class="fas fa-tint" style="color:#0ea5e9"></i><span class="val" id="h-v">--</span><small>ความชื้นอากาศ</small></div>
+            <div class="sensor-card"><i class="fas fa-seedling" style="color:#4caf50"></i><span class="val" id="sa-v">--</span><small>ความชื้นดิน A</small></div>
+            <div class="sensor-card"><i class="fas fa-seedling" style="color:#009688"></i><span class="val" id="sb-v">--</span><small>ความชื้นดิน B</small></div>
         </div>
 
         <div class="panel">
             <div style="display:flex; justify-content:space-between; margin-bottom:15px; color:var(--primary); font-weight:500;">
-                <span><i class="fas fa-robot"></i> ปั๊ม A</span>
+                <span><i class="fas fa-robot"></i> ระบบอัตโนมัติ ปั๊ม A</span>
                 <label class="switch"><input type="checkbox" id="sw-a" onchange="saveConfig('A')"><span class="slider"></span></label>
             </div>
             <div class="row">
-                <span>ช่วงเช้า</span>
+                <span>☀️ ช่วงเช้า</span>
                 <div class="input-group">
                     <input type="time" id="a-t1" placeholder="hh:mm" required onchange="saveConfig('A')">
                     <span class="divider">|</span>
@@ -104,7 +96,7 @@
                 </div>
             </div>
             <div class="row" style="border:none;">
-                <span>ช่วงเย็น</span>
+                <span>🌙 ช่วงเย็น</span>
                 <div class="input-group">
                     <input type="time" id="a-t2" placeholder="hh:mm" required onchange="saveConfig('A')">
                     <span class="divider">|</span>
@@ -115,11 +107,11 @@
 
         <div class="panel" style="border-left-color: var(--secondary);">
             <div style="display:flex; justify-content:space-between; margin-bottom:15px; color:var(--secondary); font-weight:500;">
-                <span><i class="fas fa-robot"></i> ปั๊ม B</span>
+                <span><i class="fas fa-robot"></i> ระบบอัตโนมัติ ปั๊ม B</span>
                 <label class="switch"><input type="checkbox" id="sw-b" onchange="saveConfig('B')"><span class="slider"></span></label>
             </div>
             <div class="row">
-                <span>ช่วงเช้า</span>
+                <span>☀️ ช่วงเช้า</span>
                 <div class="input-group">
                     <input type="time" id="b-t1" placeholder="hh:mm" required onchange="saveConfig('B')">
                     <span class="divider">|</span>
@@ -127,7 +119,7 @@
                 </div>
             </div>
             <div class="row" style="border:none;">
-                <span>ช่วงเย็น</span>
+                <span>🌙 ช่วงเย็น</span>
                 <div class="input-group">
                     <input type="time" id="b-t2" placeholder="hh:mm" required onchange="saveConfig('B')">
                     <span class="divider">|</span>
@@ -139,11 +131,19 @@
 
     <div id="tab-manual" class="tab-content">
         <div class="panel">
-            <div style="margin-bottom:10px; font-weight:500;">สั่งงานมือ ปั๊ม A</div>
+            <div style="margin-bottom:10px; font-weight:500;"><i class="fas fa-faucet"></i> สั่งงานมือ ปั๊ม A</div>
             <div class="input-group" style="justify-content:center;">
                 <input type="text" id="man-dur-a" class="dur-input" placeholder="mm:ss" value="01:00" style="width:120px; font-size:1.2rem;">
             </div>
-            <button id="btn-a" class="btn-manual btn-on" onclick="manualControl('A')">เริ่มรดน้ำ A</button>
+            <button id="btn-a" class="btn-manual btn-on" onclick="manualControl('A')"><i class="fas fa-play"></i> เริ่มรดน้ำ A</button>
+        </div>
+
+        <div class="panel" style="border-left-color: var(--secondary);">
+            <div style="margin-bottom:10px; font-weight:500;"><i class="fas fa-faucet"></i> สั่งงานมือ ปั๊ม B</div>
+            <div class="input-group" style="justify-content:center;">
+                <input type="text" id="man-dur-b" class="dur-input" placeholder="mm:ss" value="01:00" style="width:120px; font-size:1.2rem;">
+            </div>
+            <button id="btn-b" class="btn-manual btn-on" onclick="manualControl('B')"><i class="fas fa-play"></i> เริ่มรดน้ำ B</button>
         </div>
     </div>
 </div>
@@ -178,8 +178,10 @@
         const data = snapshot.val();
         if(!data) return;
         if(data.sensor) {
-            document.getElementById('t-v').innerText = data.sensor.temp.toFixed(1) + "°";
+            document.getElementById('t-v').innerText = data.sensor.temp.toFixed(1) + "°C";
             document.getElementById('h-v').innerText = data.sensor.hum.toFixed(0) + "%";
+            document.getElementById('sa-v').innerText = data.sensor.soilA + "%";
+            document.getElementById('sb-v').innerText = data.sensor.soilB + "%";
             document.getElementById('dot').style.color = "#4caf50";
             document.getElementById('status-text').innerText = "ออนไลน์";
         }
@@ -192,7 +194,7 @@
     function updateButton(p, run) {
         const btn = document.getElementById(`btn-${p.toLowerCase()}`);
         if(btn) {
-            btn.innerText = run ? "หยุดทำงาน" : "เริ่มรดน้ำ " + p;
+            btn.innerHTML = run ? '<i class="fas fa-stop"></i> หยุดทำงาน' : '<i class="fas fa-play"></i> เริ่มรดน้ำ ' + p;
             btn.className = run ? "btn-manual btn-stop" : "btn-manual btn-on";
         }
     }
