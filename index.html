@@ -170,6 +170,40 @@
         input:checked + .slider { background-color: var(--primary); }
         input:checked + .slider:before { transform: translateX(24px); }
 
+        .time-inputs {
+    display: flex;
+    align-items: center;
+    background: #f1f5f9;
+    padding: 4px 8px;
+    border-radius: 12px;
+}
+
+.time-inputs input[type="time"] {
+    background: transparent;
+    border: none;
+    padding: 2px;
+    font-weight: 500;
+    color: var(--primary);
+    outline: none;
+}
+
+.time-inputs input[type="number"] {
+    width: 35px;
+    background: transparent;
+    border: none;
+    text-align: center;
+    font-weight: 500;
+    padding: 2px;
+    outline: none;
+}
+
+/* เอาลูกศรขึ้นลงของช่อง number ออกเพื่อความสะอาด */
+input::-webkit-outer-spin-button,
+input::-webkit-inner-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+}
+
     </style>
 </head>
 <body>
@@ -191,50 +225,68 @@
             <div class="sensor-card"><i class="fas fa-vial" style="color:#10b981"></i><p>ดิน B</p><span id="sb-v" class="val">--</span></div>
         </div>
 
-        <div class="panel">
-            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:15px;">
-                <b style="color:var(--primary);"><i class="fas fa-faucet"></i> ปั๊มน้ำ A</b>
-                <label class="switch"><input type="checkbox" id="sw-a" onchange="saveAuto('A')"><span class="slider"></span></label>
-            </div>
-            <div class="row">
-                <span><i class="fas fa-sun" style="color:#f59e0b"></i> เช้า</span>
-                <div class="time-inputs">
-                    <input type="time" id="a-t1" onchange="saveAuto('A')">
-                    <input type="number" id="a-m1" value="0" onchange="saveAuto('A')">น.
-                    <input type="number" id="a-s1" value="15" onchange="saveAuto('A')">ว.
-                </div>
-            </div>
-            <div class="row" style="border:none;">
-                <span><i class="fas fa-moon" style="color:#6366f1"></i> เย็น</span>
-                <div class="time-inputs">
-                    <input type="time" id="a-t2" onchange="saveAuto('A')">
-                    <input type="number" id="a-m2" value="0" onchange="saveAuto('A')">น.
-                    <input type="number" id="a-s2" value="15" onchange="saveAuto('A')">ว.
-                </div>
-            </div>
+<div class="panel">
+    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:15px;">
+        <b style="color:var(--primary); font-size: 1.1rem;"><i class="fas fa-faucet"></i> ปั๊มน้ำ A</b>
+        <label class="switch"><input type="checkbox" id="sw-a" onchange="saveAuto('A')"><span class="slider"></span></label>
+    </div>
+    
+    <div class="row">
+        <div style="display:flex; align-items:center; gap:8px;">
+            <i class="fas fa-sun" style="color:#f59e0b"></i> <span>เช้า</span>
         </div>
-        
-        <div class="panel" style="border-left-color: var(--secondary);">
-            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:15px;">
-                <b style="color:var(--secondary);"><i class="fas fa-faucet"></i> ปั๊มน้ำ B</b>
-                <label class="switch"><input type="checkbox" id="sw-b" onchange="saveAuto('B')"><span class="slider"></span></label>
-            </div>
-            <div class="row">
-                <span><i class="fas fa-sun" style="color:#f59e0b"></i> เช้า</span>
-                <div class="time-inputs">
-                    <input type="time" id="b-t1" onchange="saveAuto('B')">
-                    <input type="number" id="b-m1" value="0" onchange="saveAuto('B')">น.
-                    <input type="number" id="b-s1" value="15" onchange="saveAuto('B')">ว.
-                </div>
-            </div>
-            <div class="row" style="border:none;">
-                <span><i class="fas fa-moon" style="color:#6366f1"></i> เย็น</span>
-                <div class="time-inputs">
-                    <input type="time" id="b-t2" onchange="saveAuto('B')">
-                    <input type="number" id="b-m2" value="0" onchange="saveAuto('B')">น.
-                    <input type="number" id="b-s2" value="15" onchange="saveAuto('B')">ว.
-                </div>
-            </div>
+        <div class="time-inputs">
+            <input type="time" id="a-t1" onchange="saveAuto('A')" title="เวลาเริ่ม">
+            <span style="margin: 0 4px; color: #cbd5e1;">|</span>
+            <input type="number" id="a-m1" placeholder="นาที" min="0" max="59" onchange="saveAuto('A')">
+            <span style="font-weight:bold;">:</span>
+            <input type="number" id="a-s1" placeholder="วิ" min="0" max="59" onchange="saveAuto('A')">
+        </div>
+    </div>
+    
+    <div class="row" style="border:none;">
+        <div style="display:flex; align-items:center; gap:8px;">
+            <i class="fas fa-moon" style="color:#6366f1"></i> <span>เย็น</span>
+        </div>
+        <div class="time-inputs">
+            <input type="time" id="a-t2" onchange="saveAuto('A')" title="เวลาเริ่ม">
+            <span style="margin: 0 4px; color: #cbd5e1;">|</span>
+            <input type="number" id="a-m2" placeholder="นาที" min="0" max="59" onchange="saveAuto('A')">
+            <span style="font-weight:bold;">:</span>
+            <input type="number" id="a-s2" placeholder="วิ" min="0" max="59" onchange="saveAuto('A')">
+        </div>
+    </div>
+</div>
+
+<div class="panel" style="border-left-color: var(--secondary);">
+    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:15px;">
+        <b style="color:var(--secondary); font-size: 1.1rem;"><i class="fas fa-faucet"></i> ปั๊มน้ำ B</b>
+        <label class="switch"><input type="checkbox" id="sw-b" onchange="saveAuto('B')"><span class="slider"></span></label>
+    </div>
+    
+    <div class="row">
+        <div style="display:flex; align-items:center; gap:8px;">
+            <i class="fas fa-sun" style="color:#f59e0b"></i> <span>เช้า</span>
+        </div>
+        <div class="time-inputs">
+            <input type="time" id="b-t1" onchange="saveAuto('B')">
+            <span style="margin: 0 4px; color: #cbd5e1;">|</span>
+            <input type="number" id="b-m1" placeholder="นาที" min="0" max="59" onchange="saveAuto('B')">
+            <span style="font-weight:bold;">:</span>
+            <input type="number" id="b-s1" placeholder="วิ" min="0" max="59" onchange="saveAuto('B')">
+        </div>
+    </div>
+    
+    <div class="row" style="border:none;">
+        <div style="display:flex; align-items:center; gap:8px;">
+            <i class="fas fa-moon" style="color:#6366f1"></i> <span>เย็น</span>
+        </div>
+        <div class="time-inputs">
+            <input type="time" id="b-t2" onchange="saveAuto('B')">
+            <span style="margin: 0 4px; color: #cbd5e1;">|</span>
+            <input type="number" id="b-m2" placeholder="นาที" min="0" max="59" onchange="saveAuto('B')">
+            <span style="font-weight:bold;">:</span>
+            <input type="number" id="b-s2" placeholder="วิ" min="0" max="59" onchange="saveAuto('B')">
         </div>
     </div>
 </div>
@@ -249,3 +301,4 @@
 
 </body>
 </html>
+
