@@ -26,7 +26,7 @@
         .tab-content { display: none; }
         .tab-content.active { display: block; }
 
-        /* Sensor Grid 4 Columns */
+        /* Sensor Grid */
         .sensor-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 6px; margin-bottom: 15px; }
         .sensor-card { background: white; padding: 8px 4px; border-radius: 12px; text-align: center; box-shadow: 0 2px 5px rgba(0,0,0,0.03); }
         .sensor-card i { font-size: 0.9rem; margin-bottom: 2px; }
@@ -36,10 +36,28 @@
         .panel { background: white; border-radius: 20px; padding: 15px; margin-bottom: 12px; box-shadow: 0 4px 10px rgba(0,0,0,0.05); border-left: 5px solid var(--primary); }
         .row { display: flex; justify-content: space-between; align-items: center; padding: 10px 0; border-bottom: 1px solid #f1f5f9; }
 
+        /* --- ปรับแต่ง Placeholder สำหรับช่อง Time --- */
         .input-group { display: flex; align-items: center; background: #f8fafc; padding: 6px 10px; border-radius: 10px; border: 1px solid #e2e8f0; }
-        input[type="time"] { border: none; background: transparent; font-family: 'Kanit'; font-size: 0.85rem; outline: none; width: 85px; }
-        input[type="time"]::before { content: attr(placeholder); color: #cbd5e1; font-weight: 300; margin-right: 4px; }
-        input[type="time"]:focus::before, input[type="time"]:valid::before { display: none; content: ""; }
+        
+        input[type="time"] { 
+            border: none; 
+            background: transparent; 
+            font-family: 'Kanit'; 
+            font-size: 0.85rem; 
+            outline: none; 
+            width: 85px; 
+            color: #1e293b;
+            position: relative;
+        }
+
+        /* สำหรับ iOS/Android เพื่อโชว์ hh:mm จางๆ */
+        input[type="time"]:not(:valid)::before {
+            content: "hh:mm";
+            color: #cbd5e1;
+            font-weight: 300;
+            position: absolute;
+            left: 0;
+        }
 
         .dur-input { border: none; background: transparent; font-family: 'Kanit'; font-size: 0.9rem; color: var(--primary); width: 65px; text-align: center; outline: none; }
         .dur-input::placeholder { color: #cbd5e1; font-weight: 300; }
@@ -92,7 +110,7 @@
             <div class="row">
                 <span style="font-size:0.85rem;">☀️ เช้า</span>
                 <div class="input-group">
-                    <input type="time" id="a-t1" placeholder="hh:mm" onchange="saveConfig('A')">
+                    <input type="time" id="a-t1" required onchange="saveConfig('A')">
                     <span class="divider">|</span>
                     <input type="text" id="a-d1-input" class="dur-input" placeholder="mm:ss" inputmode="tel" oninput="formatTime(this)" onchange="saveConfig('A')">
                 </div>
@@ -100,7 +118,7 @@
             <div class="row" style="border:none;">
                 <span style="font-size:0.85rem;">🌙 เย็น</span>
                 <div class="input-group">
-                    <input type="time" id="a-t2" placeholder="hh:mm" onchange="saveConfig('A')">
+                    <input type="time" id="a-t2" required onchange="saveConfig('A')">
                     <span class="divider">|</span>
                     <input type="text" id="a-d2-input" class="dur-input" placeholder="mm:ss" inputmode="tel" oninput="formatTime(this)" onchange="saveConfig('A')">
                 </div>
@@ -115,7 +133,7 @@
             <div class="row">
                 <span style="font-size:0.85rem;">☀️ เช้า</span>
                 <div class="input-group">
-                    <input type="time" id="b-t1" placeholder="hh:mm" onchange="saveConfig('B')">
+                    <input type="time" id="b-t1" required onchange="saveConfig('B')">
                     <span class="divider">|</span>
                     <input type="text" id="b-d1-input" class="dur-input" placeholder="mm:ss" inputmode="tel" oninput="formatTime(this)" onchange="saveConfig('B')">
                 </div>
@@ -123,7 +141,7 @@
             <div class="row" style="border:none;">
                 <span style="font-size:0.85rem;">🌙 เย็น</span>
                 <div class="input-group">
-                    <input type="time" id="b-t2" placeholder="hh:mm" onchange="saveConfig('B')">
+                    <input type="time" id="b-t2" required onchange="saveConfig('B')">
                     <span class="divider">|</span>
                     <input type="text" id="b-d2-input" class="dur-input" placeholder="mm:ss" inputmode="tel" oninput="formatTime(this)" onchange="saveConfig('B')">
                 </div>
@@ -182,7 +200,6 @@
         }
     }
 
-    // แปลงวินาทีกลับเป็น mm:ss เพื่อหยอดลงในช่องกรอก
     function secondsToMMSS(totalSeconds) {
         if (!totalSeconds) return "";
         let mins = Math.floor(totalSeconds / 60);
@@ -206,12 +223,10 @@
         return parseInt(str) || 0;
     }
 
-    // --- ส่วนดึงข้อมูล (ขากลับจาก Firebase) ---
     db.ref().on("value", (snapshot) => {
         const data = snapshot.val();
         if(!data) return;
 
-        // 1. ดึงค่าเซ็นเซอร์
         if(data.sensor) {
             document.getElementById('t-v').innerText = data.sensor.temp.toFixed(1) + "°";
             document.getElementById('h-v').innerText = data.sensor.hum.toFixed(0) + "%";
@@ -221,19 +236,16 @@
             document.getElementById('status-text').innerText = "Online";
         }
 
-        // 2. ดึงสถานะสั่งงานมือ (Manual)
         if(data.control) {
             updateUI('A', data.control.pumpA.run);
             updateUI('B', data.control.pumpB.run);
         }
 
-        // 3. ดึงค่าตั้งเวลา (Auto) มาหยอดลงในช่องกรอก (แก้ไขปัญหารีเซ็ต)
         if(data.auto) {
             ['A', 'B'].forEach(p => {
                 const config = data.auto[p];
                 const pL = p.toLowerCase();
                 if(config) {
-                    // ป้องกันการทับข้อมูลขณะที่ผู้ใช้กำลังพิมพ์ (เช็ค Focus)
                     if(document.activeElement.id !== `${pL}-t1`) document.getElementById(`${pL}-t1`).value = config.time1 || "";
                     if(document.activeElement.id !== `${pL}-t2`) document.getElementById(`${pL}-t2`).value = config.time2 || "";
                     if(document.activeElement.id !== `${pL}-d1-input`) document.getElementById(`${pL}-d1-input`).value = secondsToMMSS(config.dur1);
