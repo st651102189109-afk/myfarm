@@ -8,7 +8,6 @@
     <link rel="icon" type="image/png" href="logo.png">
     <link rel="apple-touch-icon" href="logo.png">
     <meta name="apple-mobile-web-app-capable" content="yes">
-    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 
     <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js"></script>
@@ -16,158 +15,59 @@
     
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;500&display=swap');
-        
-        :root {
-            --primary: #2e7d32;
-            --secondary: #0288d1;
-            --bg: #f1f5f9;
-            --white: #ffffff;
-        }
-
+        :root { --primary: #2e7d32; --secondary: #0288d1; --bg: #f1f5f9; }
         * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
-
-        body {
-            font-family: 'Kanit', sans-serif;
-            margin: 0;
-            background: var(--bg);
-            color: #334155;
-            padding-bottom: 80px;
-        }
-
-        header {
-            background: var(--primary);
-            color: white;
-            padding: 25px 20px;
-            border-radius: 0 0 30px 30px;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
-        }
-
+        body { font-family: 'Kanit', sans-serif; margin: 0; background: var(--bg); padding-bottom: 80px; }
+        
+        header { background: var(--primary); color: white; padding: 25px 20px; border-radius: 0 0 30px 30px; }
         header h3 { margin: 0; font-size: 1.5rem; display: flex; align-items: center; gap: 10px; }
 
-        .status-bar { font-size: 0.85rem; margin-top: 8px; opacity: 0.9; }
-
         .container { max-width: 500px; margin: 0 auto; padding: 15px; }
-
         .tab-content { display: none; }
-        .tab-content.active { display: block; animation: fadeIn 0.3s ease; }
+        .tab-content.active { display: block; }
 
-        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+        .sensor-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; margin-bottom: 20px; }
+        .sensor-card { background: white; padding: 15px; border-radius: 20px; text-align: center; box-shadow: 0 2px 10px rgba(0,0,0,0.03); }
+        .sensor-card .val { font-size: 1.2rem; font-weight: 600; display: block; }
 
-        /* Sensor Cards */
-        .sensor-grid {
-            display: grid;
-            grid-template-columns: repeat(2, 1fr);
-            gap: 12px;
-            margin-bottom: 20px;
-        }
+        .panel { background: white; border-radius: 25px; padding: 20px; margin-bottom: 15px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); border-left: 6px solid var(--primary); }
+        .row { display: flex; justify-content: space-between; align-items: center; padding: 12px 0; border-bottom: 1px solid #f1f5f9; }
 
-        .sensor-card {
-            background: var(--white);
-            padding: 15px;
-            border-radius: 20px;
-            text-align: center;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.03);
-        }
-
-        .sensor-card i { font-size: 1.3rem; margin-bottom: 5px; }
-        .sensor-card .label { font-size: 0.75rem; color: #64748b; display: block; }
-        .sensor-card .val { font-size: 1.2rem; font-weight: 600; color: #1e293b; }
-
-        /* Control Panel */
-        .panel {
-            background: var(--white);
-            border-radius: 25px;
-            padding: 20px;
-            margin-bottom: 15px;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.05);
-            border-left: 6px solid var(--primary);
-        }
-
-        .panel-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 15px;
-            font-weight: 500;
-        }
-
-        .row {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 12px 0;
-            border-bottom: 1px solid #f1f5f9;
-        }
-
-        /* Input Styles (The ones you requested) */
+        /* Input Group with Placeholder Logic */
         .input-group {
-            display: flex;
-            align-items: center;
-            background: #f8fafc;
-            padding: 6px 12px;
-            border-radius: 12px;
-            border: 1px solid #e2e8f0;
+            display: flex; align-items: center; background: #f8fafc; 
+            padding: 8px 15px; border-radius: 12px; border: 1px solid #e2e8f0;
         }
 
         input[type="time"] {
-            border: none;
-            background: transparent;
-            font-family: 'Kanit';
-            font-size: 0.9rem;
-            color: #1e293b;
-            outline: none;
-            width: 100px;
+            border: none; background: transparent; font-family: 'Kanit'; 
+            font-size: 0.95rem; outline: none; width: 105px; color: #1e293b;
+        }
+
+        /* เทคนิคโชว์ hh:mm จางๆ ในช่อง time */
+        input[type="time"]::before {
+            content: attr(placeholder); color: #cbd5e1; font-weight: 300; margin-right: 5px;
+        }
+        input[type="time"]:focus::before, input[type="time"]:valid::before {
+            display: none; content: "";
         }
 
         .dur-input {
-            border: none;
-            background: transparent;
-            font-family: 'Kanit';
-            font-size: 0.9rem;
-            color: var(--primary);
-            width: 65px;
-            text-align: center;
-            outline: none;
+            border: none; background: transparent; font-family: 'Kanit'; 
+            font-size: 0.95rem; color: var(--primary); width: 75px; text-align: center; outline: none;
         }
-
         .dur-input::placeholder { color: #cbd5e1; font-weight: 300; }
 
-        .divider { margin: 0 8px; color: #cbd5e1; font-weight: 300; }
+        .divider { margin: 0 10px; color: #cbd5e1; font-weight: 200; }
 
-        /* Manual Buttons */
-        .btn-manual {
-            width: 100%;
-            padding: 14px;
-            border-radius: 15px;
-            border: none;
-            font-family: 'Kanit';
-            font-size: 1rem;
-            font-weight: 500;
-            cursor: pointer;
-            margin-top: 15px;
-            transition: 0.2s;
-        }
+        .btn-manual { width: 100%; padding: 15px; border-radius: 15px; border: none; font-family: 'Kanit'; font-size: 1rem; font-weight: 500; cursor: pointer; margin-top: 15px; }
         .btn-on { background: #4caf50; color: white; }
         .btn-stop { background: #f44336; color: white; }
 
-        /* Navigation */
-        .bottom-nav {
-            position: fixed;
-            bottom: 0; width: 100%;
-            background: var(--white);
-            display: flex;
-            padding: 12px;
-            box-shadow: 0 -4px 20px rgba(0,0,0,0.05);
-        }
-
-        .nav-item {
-            flex: 1; border: none; background: none; color: #94a3b8;
-            font-family: 'Kanit'; cursor: pointer; text-align: center;
-        }
-
+        .bottom-nav { position: fixed; bottom: 0; width: 100%; background: white; display: flex; padding: 12px; box-shadow: 0 -4px 20px rgba(0,0,0,0.05); }
+        .nav-item { flex: 1; border: none; background: none; color: #94a3b8; font-family: 'Kanit'; cursor: pointer; text-align: center; }
         .nav-item.active { color: var(--primary); font-weight: 600; }
 
-        /* Toggle Switch */
         .switch { position: relative; width: 44px; height: 22px; }
         .switch input { opacity: 0; width: 0; height: 0; }
         .slider { position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0; background-color: #cbd5e1; transition: .4s; border-radius: 34px; }
@@ -180,38 +80,33 @@
 
 <header>
     <h3><i class="fas fa-leaf"></i> โรงเรือนอัจฉริยะ</h3>
-    <div class="status-bar">
-        <i class="fas fa-circle" id="dot" style="color: #94a3b8; font-size: 0.7rem;"></i> 
-        <span id="status-text">กำลังเชื่อมต่อ...</span>
-    </div>
+    <div style="font-size: 0.85rem; opacity: 0.8;"><i class="fas fa-circle" id="dot"></i> <span id="status-text">Connecting...</span></div>
 </header>
 
 <div class="container">
     <div id="tab-auto" class="tab-content active">
         <div class="sensor-grid">
-            <div class="sensor-card"><i class="fas fa-thermometer-half" style="color:#f44336"></i><span class="label">อุณหภูมิ</span><span id="t-v" class="val">--</span></div>
-            <div class="sensor-card"><i class="fas fa-tint" style="color:#2196f3"></i><span class="label">ความชื้น</span><span id="h-v" class="val">--</span></div>
-            <div class="sensor-card"><i class="fas fa-seedling" style="color:#4caf50"></i><span class="label">ดิน A</span><span id="sa-v" class="val">--</span></div>
-            <div class="sensor-card"><i class="fas fa-seedling" style="color:#009688"></i><span class="label">ดิน B</span><span id="sb-v" class="val">--</span></div>
+            <div class="sensor-card"><span class="val" id="t-v">--</span><small>อุณหภูมิ</small></div>
+            <div class="sensor-card"><span class="val" id="h-v">--</span><small>ความชื้น</small></div>
         </div>
 
         <div class="panel">
-            <div class="panel-header" style="color: var(--primary);">
-                <span><i class="fas fa-robot"></i> ตั้งเวลา ปั๊ม A</span>
+            <div style="display:flex; justify-content:space-between; margin-bottom:15px; color:var(--primary); font-weight:500;">
+                <span><i class="fas fa-robot"></i> ปั๊ม A</span>
                 <label class="switch"><input type="checkbox" id="sw-a" onchange="saveConfig('A')"><span class="slider"></span></label>
             </div>
             <div class="row">
-                <span><i class="fas fa-sun" style="color: #ffa000;"></i> เช้า</span>
+                <span>ช่วงเช้า</span>
                 <div class="input-group">
-                    <input type="time" id="a-t1" placeholder="hh:mm" onchange="saveConfig('A')">
+                    <input type="time" id="a-t1" placeholder="hh:mm" required onchange="saveConfig('A')">
                     <span class="divider">|</span>
                     <input type="text" id="a-d1-input" class="dur-input" placeholder="mm:ss" onchange="saveConfig('A')">
                 </div>
             </div>
             <div class="row" style="border:none;">
-                <span><i class="fas fa-moon" style="color: #3f51b5;"></i> เย็น</span>
+                <span>ช่วงเย็น</span>
                 <div class="input-group">
-                    <input type="time" id="a-t2" placeholder="hh:mm" onchange="saveConfig('A')">
+                    <input type="time" id="a-t2" placeholder="hh:mm" required onchange="saveConfig('A')">
                     <span class="divider">|</span>
                     <input type="text" id="a-d2-input" class="dur-input" placeholder="mm:ss" onchange="saveConfig('A')">
                 </div>
@@ -219,22 +114,22 @@
         </div>
 
         <div class="panel" style="border-left-color: var(--secondary);">
-            <div class="panel-header" style="color: var(--secondary);">
-                <span><i class="fas fa-robot"></i> ตั้งเวลา ปั๊ม B</span>
+            <div style="display:flex; justify-content:space-between; margin-bottom:15px; color:var(--secondary); font-weight:500;">
+                <span><i class="fas fa-robot"></i> ปั๊ม B</span>
                 <label class="switch"><input type="checkbox" id="sw-b" onchange="saveConfig('B')"><span class="slider"></span></label>
             </div>
             <div class="row">
-                <span><i class="fas fa-sun" style="color: #ffa000;"></i> เช้า</span>
+                <span>ช่วงเช้า</span>
                 <div class="input-group">
-                    <input type="time" id="b-t1" placeholder="hh:mm" onchange="saveConfig('B')">
+                    <input type="time" id="b-t1" placeholder="hh:mm" required onchange="saveConfig('B')">
                     <span class="divider">|</span>
                     <input type="text" id="b-d1-input" class="dur-input" placeholder="mm:ss" onchange="saveConfig('B')">
                 </div>
             </div>
             <div class="row" style="border:none;">
-                <span><i class="fas fa-moon" style="color: #3f51b5;"></i> เย็น</span>
+                <span>ช่วงเย็น</span>
                 <div class="input-group">
-                    <input type="time" id="b-t2" placeholder="hh:mm" onchange="saveConfig('B')">
+                    <input type="time" id="b-t2" placeholder="hh:mm" required onchange="saveConfig('B')">
                     <span class="divider">|</span>
                     <input type="text" id="b-d2-input" class="dur-input" placeholder="mm:ss" onchange="saveConfig('B')">
                 </div>
@@ -244,25 +139,11 @@
 
     <div id="tab-manual" class="tab-content">
         <div class="panel">
-            <div class="panel-header">สั่งงานมือ ปั๊ม A</div>
-            <div class="row" style="border:none;">
-                <span>ระบุเวลารดน้ำ</span>
-                <div class="input-group">
-                    <input type="text" id="man-dur-a" class="dur-input" placeholder="mm:ss" value="01:00" style="width: 100px;">
-                </div>
+            <div style="margin-bottom:10px; font-weight:500;">สั่งงานมือ ปั๊ม A</div>
+            <div class="input-group" style="justify-content:center;">
+                <input type="text" id="man-dur-a" class="dur-input" placeholder="mm:ss" value="01:00" style="width:120px; font-size:1.2rem;">
             </div>
             <button id="btn-a" class="btn-manual btn-on" onclick="manualControl('A')">เริ่มรดน้ำ A</button>
-        </div>
-
-        <div class="panel" style="border-left-color: var(--secondary);">
-            <div class="panel-header">สั่งงานมือ ปั๊ม B</div>
-            <div class="row" style="border:none;">
-                <span>ระบุเวลารดน้ำ</span>
-                <div class="input-group">
-                    <input type="text" id="man-dur-b" class="dur-input" placeholder="mm:ss" value="01:00" style="width: 100px;">
-                </div>
-            </div>
-            <button id="btn-b" class="btn-manual btn-on" onclick="manualControl('B')">เริ่มรดน้ำ B</button>
         </div>
     </div>
 </div>
@@ -273,12 +154,10 @@
 </nav>
 
 <script>
-    // --- Firebase Setup ---
     const firebaseConfig = { databaseURL: "https://smartfarmlv1-default-rtdb.asia-southeast1.firebasedatabase.app" };
     firebase.initializeApp(firebaseConfig);
     const db = firebase.database();
 
-    // --- Tab Switching ---
     function switchTab(id, btn) {
         document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
         document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
@@ -286,7 +165,6 @@
         btn.classList.add('active');
     }
 
-    // --- Helper: Convert mm:ss to Seconds ---
     function timeToSeconds(str) {
         if(!str) return 0;
         if(str.includes(':')) {
@@ -296,52 +174,35 @@
         return parseInt(str) || 0;
     }
 
-    // --- Helper: Convert Seconds to mm:ss for Display ---
-    function secondsToMMSS(sec) {
-        const m = Math.floor(sec / 60).toString().padStart(2, '0');
-        const s = (sec % 60).toString().padStart(2, '0');
-        return `${m}:${s}`;
-    }
-
-    // --- Listen to Firebase ---
     db.ref().on("value", (snapshot) => {
         const data = snapshot.val();
         if(!data) return;
-
-        // Sensor Update
         if(data.sensor) {
-            document.getElementById('t-v').innerText = data.sensor.temp.toFixed(1) + "°C";
+            document.getElementById('t-v').innerText = data.sensor.temp.toFixed(1) + "°";
             document.getElementById('h-v').innerText = data.sensor.hum.toFixed(0) + "%";
-            document.getElementById('sa-v').innerText = data.sensor.soilA + "%";
-            document.getElementById('sb-v').innerText = data.sensor.soilB + "%";
             document.getElementById('dot').style.color = "#4caf50";
             document.getElementById('status-text').innerText = "ออนไลน์";
         }
-
-        // Control Update (Manual buttons)
         if(data.control) {
             updateButton('A', data.control.pumpA.run);
             updateButton('B', data.control.pumpB.run);
         }
     });
 
-    function updateButton(p, isRunning) {
+    function updateButton(p, run) {
         const btn = document.getElementById(`btn-${p.toLowerCase()}`);
-        if(isRunning) {
-            btn.innerText = "หยุดทำงาน";
-            btn.className = "btn-manual btn-stop";
-        } else {
-            btn.innerText = "เริ่มรดน้ำ " + p;
-            btn.className = "btn-manual btn-on";
+        if(btn) {
+            btn.innerText = run ? "หยุดทำงาน" : "เริ่มรดน้ำ " + p;
+            btn.className = run ? "btn-manual btn-stop" : "btn-manual btn-on";
         }
     }
 
-    // --- Actions ---
     function manualControl(p) {
-        const isRun = document.getElementById(`btn-${p.toLowerCase()}`).classList.contains('btn-stop');
+        const btn = document.getElementById(`btn-${p.toLowerCase()}`);
+        const isRun = btn.classList.contains('btn-stop');
         if(!isRun) {
-            const durStr = document.getElementById(`man-dur-${p.toLowerCase()}`).value;
-            db.ref(`control/pump${p}`).set({ run: true, duration: timeToSeconds(durStr) });
+            const dur = timeToSeconds(document.getElementById(`man-dur-${p.toLowerCase()}`).value);
+            db.ref(`control/pump${p}`).set({ run: true, duration: dur });
         } else {
             db.ref(`control/pump${p}`).update({ run: false });
         }
@@ -349,14 +210,13 @@
 
     function saveConfig(p) {
         const pL = p.toLowerCase();
-        const config = {
+        db.ref(`auto/${p}`).set({
             enabled: document.getElementById(`sw-${pL}`).checked,
             time1: document.getElementById(`${pL}-t1`).value,
             dur1: timeToSeconds(document.getElementById(`${pL}-d1-input`).value),
             time2: document.getElementById(`${pL}-t2`).value,
             dur2: timeToSeconds(document.getElementById(`${pL}-d2-input`).value)
-        };
-        db.ref(`auto/${p}`).set(config);
+        });
     }
 </script>
 </body>
