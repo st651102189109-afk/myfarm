@@ -20,43 +20,45 @@
         body { font-family: 'Kanit', sans-serif; margin: 0; background: var(--bg); padding-bottom: 80px; }
         
         header { background: var(--primary); color: white; padding: 15px 20px; border-radius: 0 0 25px 25px; box-shadow: 0 4px 10px rgba(0,0,0,0.1); }
-        header h3 { margin: 0; font-size: 1.3rem; display: flex; align-items: center; gap: 8px; }
+        header h3 { margin: 0; font-size: 1.2rem; display: flex; align-items: center; gap: 8px; }
 
-        .container { max-width: 500px; margin: 0 auto; padding: 12px; }
+        .container { max-width: 600px; margin: 0 auto; padding: 10px; }
         .tab-content { display: none; }
         .tab-content.active { display: block; }
 
-        /* --- ปรับขนาด Sensor Grid ให้เล็กลง --- */
-        .sensor-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 8px; margin-bottom: 15px; }
+        /* --- ปรับ Grid เป็น 4 ช่องแนวนอน --- */
+        .sensor-grid { 
+            display: grid; 
+            grid-template-columns: repeat(4, 1fr); /* 4 ช่องเท่าๆ กัน */
+            gap: 6px; 
+            margin-bottom: 15px; 
+        }
         .sensor-card { 
             background: white; 
-            padding: 8px 12px; 
-            border-radius: 15px; 
-            display: flex; 
-            align-items: center; 
-            gap: 10px;
+            padding: 8px 4px; 
+            border-radius: 12px; 
+            text-align: center;
             box-shadow: 0 2px 5px rgba(0,0,0,0.03); 
         }
-        .sensor-card i { font-size: 1rem; }
-        .sensor-card .info { text-align: left; }
-        .sensor-card .val { font-size: 1rem; font-weight: 600; line-height: 1; }
-        .sensor-card small { color: #64748b; font-size: 0.7rem; display: block; }
+        .sensor-card i { font-size: 0.9rem; margin-bottom: 2px; }
+        .sensor-card .val { font-size: 0.85rem; font-weight: 600; display: block; line-height: 1.2; }
+        .sensor-card small { color: #64748b; font-size: 0.65rem; display: block; white-space: nowrap; }
 
         /* Panel */
         .panel { background: white; border-radius: 20px; padding: 15px; margin-bottom: 12px; box-shadow: 0 4px 10px rgba(0,0,0,0.05); border-left: 5px solid var(--primary); }
         .row { display: flex; justify-content: space-between; align-items: center; padding: 10px 0; border-bottom: 1px solid #f1f5f9; }
 
         /* Input Group with Placeholder */
-        .input-group { display: flex; align-items: center; background: #f8fafc; padding: 6px 12px; border-radius: 10px; border: 1px solid #e2e8f0; }
-        input[type="time"] { border: none; background: transparent; font-family: 'Kanit'; font-size: 0.9rem; outline: none; width: 95px; color: #1e293b; }
+        .input-group { display: flex; align-items: center; background: #f8fafc; padding: 6px 10px; border-radius: 10px; border: 1px solid #e2e8f0; }
+        input[type="time"] { border: none; background: transparent; font-family: 'Kanit'; font-size: 0.85rem; outline: none; width: 85px; color: #1e293b; }
         
-        input[type="time"]::before { content: attr(placeholder); color: #cbd5e1; font-weight: 300; margin-right: 5px; }
+        input[type="time"]::before { content: attr(placeholder); color: #cbd5e1; font-weight: 300; margin-right: 4px; font-size: 0.8rem; }
         input[type="time"]:focus::before, input[type="time"]:valid::before { display: none; content: ""; }
 
-        .dur-input { border: none; background: transparent; font-family: 'Kanit'; font-size: 0.9rem; color: var(--primary); width: 65px; text-align: center; outline: none; }
-        .dur-input::placeholder { color: #cbd5e1; font-weight: 300; }
+        .dur-input { border: none; background: transparent; font-family: 'Kanit'; font-size: 0.85rem; color: var(--primary); width: 55px; text-align: center; outline: none; }
+        .dur-input::placeholder { color: #cbd5e1; font-weight: 300; font-size: 0.8rem; }
 
-        .divider { margin: 0 8px; color: #cbd5e1; font-weight: 200; }
+        .divider { margin: 0 6px; color: #cbd5e1; font-weight: 200; }
 
         /* Manual Controls */
         .btn-manual { width: 100%; padding: 12px; border-radius: 12px; border: none; font-family: 'Kanit'; font-size: 0.95rem; font-weight: 500; cursor: pointer; margin-top: 10px; }
@@ -64,14 +66,14 @@
         .btn-stop { background: #f44336; color: white; }
 
         .bottom-nav { position: fixed; bottom: 0; width: 100%; background: white; display: flex; padding: 10px; box-shadow: 0 -4px 15px rgba(0,0,0,0.05); }
-        .nav-item { flex: 1; border: none; background: none; color: #94a3b8; font-family: 'Kanit'; cursor: pointer; text-align: center; font-size: 0.85rem; }
+        .nav-item { flex: 1; border: none; background: none; color: #94a3b8; font-family: 'Kanit'; cursor: pointer; text-align: center; font-size: 0.8rem; }
         .nav-item i { font-size: 1.1rem; }
         .nav-item.active { color: var(--primary); font-weight: 600; }
 
-        .switch { position: relative; width: 40px; height: 20px; }
+        .switch { position: relative; width: 38px; height: 18px; }
         .switch input { opacity: 0; width: 0; height: 0; }
         .slider { position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0; background-color: #cbd5e1; transition: .4s; border-radius: 20px; }
-        .slider:before { position: absolute; content: ""; height: 14px; width: 14px; left: 3px; bottom: 3px; background-color: white; transition: .4s; border-radius: 50%; }
+        .slider:before { position: absolute; content: ""; height: 14px; width: 14px; left: 2px; bottom: 2px; background-color: white; transition: .4s; border-radius: 50%; }
         input:checked + .slider { background-color: var(--primary); }
         input:checked + .slider:before { transform: translateX(20px); }
     </style>
@@ -80,7 +82,7 @@
 
 <header>
     <h3><i class="fas fa-leaf"></i> โรงเรือนอัจฉริยะ</h3>
-    <div style="font-size: 0.75rem; opacity: 0.8;"><i class="fas fa-circle" id="dot"></i> <span id="status-text">Connecting...</span></div>
+    <div style="font-size: 0.7rem; opacity: 0.8;"><i class="fas fa-circle" id="dot"></i> <span id="status-text">Connecting...</span></div>
 </header>
 
 <div class="container">
@@ -88,19 +90,23 @@
         <div class="sensor-grid">
             <div class="sensor-card">
                 <i class="fas fa-thermometer-half" style="color:#ef4444"></i>
-                <div class="info"><span class="val" id="t-v">--</span><small>อุณหภูมิ</small></div>
+                <span class="val" id="t-v">--</span>
+                <small>Temp</small>
             </div>
             <div class="sensor-card">
                 <i class="fas fa-tint" style="color:#0ea5e9"></i>
-                <div class="info"><span class="val" id="h-v">--</span><small>อากาศ</small></div>
+                <span class="val" id="h-v">--</span>
+                <small>Hum</small>
             </div>
             <div class="sensor-card">
                 <i class="fas fa-seedling" style="color:#4caf50"></i>
-                <div class="info"><span class="val" id="sa-v">--</span><small>ดิน A</small></div>
+                <span class="val" id="sa-v">--</span>
+                <small>Soil A</small>
             </div>
             <div class="sensor-card">
                 <i class="fas fa-seedling" style="color:#009688"></i>
-                <div class="info"><span class="val" id="sb-v">--</span><small>ดิน B</small></div>
+                <span class="val" id="sb-v">--</span>
+                <small>Soil B</small>
             </div>
         </div>
 
@@ -171,8 +177,8 @@
 </div>
 
 <nav class="bottom-nav">
-    <button class="nav-item active" onclick="switchTab('tab-auto', this)"><i class="fas fa-clock"></i><br>อัตโนมัติ</button>
-    <button class="nav-item" onclick="switchTab('tab-manual', this)"><i class="fas fa-hand-pointer"></i><br>สั่งงานมือ</button>
+    <button class="nav-item active" onclick="switchTab('tab-auto', this)"><i class="fas fa-clock"></i><br>Auto</button>
+    <button class="nav-item" onclick="switchTab('tab-manual', this)"><i class="fas fa-hand-pointer"></i><br>Manual</button>
 </nav>
 
 <script>
@@ -216,7 +222,7 @@
     function updateButton(p, run) {
         const btn = document.getElementById(`btn-${p.toLowerCase()}`);
         if(btn) {
-            btn.innerHTML = run ? '<i class="fas fa-stop"></i> STOP' : '<i class="fas fa-play"></i> เริ่มรดน้ำ ' + p;
+            btn.innerHTML = run ? '<i class="fas fa-stop"></i> STOP' : '<i class="fas fa-play"></i> START ' + p;
             btn.className = run ? "btn-manual btn-stop" : "btn-manual btn-on";
         }
     }
