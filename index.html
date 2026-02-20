@@ -46,7 +46,7 @@
 
         .divider { margin: 0 6px; color: #cbd5e1; font-weight: 200; }
 
-        /* Light Status */
+        /* Status & Buttons */
         .status-light { width: 10px; height: 10px; border-radius: 50%; display: inline-block; margin-right: 8px; }
         .light-off { background-color: var(--red); box-shadow: 0 0 8px var(--red); }
         .light-on { background-color: var(--green); box-shadow: 0 0 8px var(--green); animation: pulse 1.5s infinite; }
@@ -78,21 +78,21 @@
 <div class="container">
     <div id="tab-auto" class="tab-content active">
         <div class="sensor-grid">
-            <div class="sensor-card"><i class="fas fa-thermometer-half" style="color:#ef4444"></i><span class="val" id="t-v">--</span><small>อุณหภูมิ</small></div>
-            <div class="sensor-card"><i class="fas fa-tint" style="color:#0ea5e9"></i><span class="val" id="h-v">--</span><small>ความชื้นอากาศ</small></div>
-            <div class="sensor-card"><i class="fas fa-seedling" style="color:#4caf50"></i><span class="val" id="sa-v">--</span><small>ความชื้นดิน A</small></div>
-            <div class="sensor-card"><i class="fas fa-seedling" style="color:#009688"></i><span class="val" id="sb-v">--</span><small>ความชื้นดิน B</small></div>
+            <div class="sensor-card"><i class="fas fa-thermometer-half" style="color:#ef4444"></i><span class="val" id="t-v">--</span><small>Temp</small></div>
+            <div class="sensor-card"><i class="fas fa-tint" style="color:#0ea5e9"></i><span class="val" id="h-v">--</span><small>Hum</small></div>
+            <div class="sensor-card"><i class="fas fa-seedling" style="color:#4caf50"></i><span class="val" id="sa-v">--</span><small>Soil A</small></div>
+            <div class="sensor-card"><i class="fas fa-seedling" style="color:#009688"></i><span class="val" id="sb-v">--</span><small>Soil B</small></div>
         </div>
 
         <div class="panel">
             <div style="display:flex; justify-content:space-between; margin-bottom:10px; color:var(--primary); font-weight:500; font-size:0.9rem;">
-                <span><i class="fas fa-robot"></i> แปลงปลูกผัก A</span>
+                <span><i class="fas fa-robot"></i> อัตโนมัติ ปั๊ม A</span>
                 <label class="switch"><input type="checkbox" id="sw-a" onchange="saveConfig('A')"><span class="slider"></span></label>
             </div>
             <div class="row">
                 <span style="font-size:0.85rem;">☀️ เช้า</span>
                 <div class="input-group">
-                    <input type="time" id="a-t1" placeholder="hh:mm" required onchange="saveConfig('A')">
+                    <input type="time" id="a-t1" placeholder="hh:mm" onchange="saveConfig('A')">
                     <span class="divider">|</span>
                     <input type="text" id="a-d1-input" class="dur-input" placeholder="mm:ss" inputmode="tel" oninput="formatTime(this)" onchange="saveConfig('A')">
                 </div>
@@ -100,7 +100,7 @@
             <div class="row" style="border:none;">
                 <span style="font-size:0.85rem;">🌙 เย็น</span>
                 <div class="input-group">
-                    <input type="time" id="a-t2" placeholder="hh:mm" required onchange="saveConfig('A')">
+                    <input type="time" id="a-t2" placeholder="hh:mm" onchange="saveConfig('A')">
                     <span class="divider">|</span>
                     <input type="text" id="a-d2-input" class="dur-input" placeholder="mm:ss" inputmode="tel" oninput="formatTime(this)" onchange="saveConfig('A')">
                 </div>
@@ -109,13 +109,13 @@
 
         <div class="panel" style="border-left-color: var(--secondary);">
             <div style="display:flex; justify-content:space-between; margin-bottom:10px; color:var(--secondary); font-weight:500; font-size:0.9rem;">
-                <span><i class="fas fa-robot"></i> แปลงปลูกผัก B</span>
+                <span><i class="fas fa-robot"></i> อัตโนมัติ ปั๊ม B</span>
                 <label class="switch"><input type="checkbox" id="sw-b" onchange="saveConfig('B')"><span class="slider"></span></label>
             </div>
             <div class="row">
                 <span style="font-size:0.85rem;">☀️ เช้า</span>
                 <div class="input-group">
-                    <input type="time" id="b-t1" placeholder="hh:mm" required onchange="saveConfig('B')">
+                    <input type="time" id="b-t1" placeholder="hh:mm" onchange="saveConfig('B')">
                     <span class="divider">|</span>
                     <input type="text" id="b-d1-input" class="dur-input" placeholder="mm:ss" inputmode="tel" oninput="formatTime(this)" onchange="saveConfig('B')">
                 </div>
@@ -123,7 +123,7 @@
             <div class="row" style="border:none;">
                 <span style="font-size:0.85rem;">🌙 เย็น</span>
                 <div class="input-group">
-                    <input type="time" id="b-t2" placeholder="hh:mm" required onchange="saveConfig('B')">
+                    <input type="time" id="b-t2" placeholder="hh:mm" onchange="saveConfig('B')">
                     <span class="divider">|</span>
                     <input type="text" id="b-d2-input" class="dur-input" placeholder="mm:ss" inputmode="tel" oninput="formatTime(this)" onchange="saveConfig('B')">
                 </div>
@@ -134,7 +134,7 @@
     <div id="tab-manual" class="tab-content">
         <div class="panel">
             <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;">
-                <span style="font-weight:500; font-size:0.95rem;"><i class="fas fa-faucet"></i> สั่งงานมือแปลง A</span>
+                <span style="font-weight:500; font-size:0.95rem;"><i class="fas fa-faucet"></i> สั่งงานมือ ปั๊ม A</span>
                 <div id="light-a" class="status-light light-off"></div>
             </div>
             <div class="row" style="border:none;">
@@ -148,7 +148,7 @@
 
         <div class="panel" style="border-left-color: var(--secondary);">
             <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;">
-                <span style="font-weight:500; font-size:0.95rem;"><i class="fas fa-faucet"></i> สั่งงานมือแปลง B</span>
+                <span style="font-weight:500; font-size:0.95rem;"><i class="fas fa-faucet"></i> สั่งงานมือ ปั๊ม B</span>
                 <div id="light-b" class="status-light light-off"></div>
             </div>
             <div class="row" style="border:none;">
@@ -172,20 +172,22 @@
     firebase.initializeApp(firebaseConfig);
     const db = firebase.database();
 
-    // --- ระบบจัดฟอร์แมต mm:ss อัตโนมัติ ---
     function formatTime(input) {
-        // ลบอักขระที่ไม่ใช่ตัวเลขออก
         let val = input.value.replace(/\D/g, '');
-        
-        // คุมไม่ให้เกิน 4 หลัก (2 นาที 2 วินาที)
         if (val.length > 4) val = val.slice(0, 4);
-        
-        // จัดฟอร์แมต
         if (val.length >= 3) {
             input.value = val.slice(0, 2) + ':' + val.slice(2);
         } else {
             input.value = val;
         }
+    }
+
+    // แปลงวินาทีกลับเป็น mm:ss เพื่อหยอดลงในช่องกรอก
+    function secondsToMMSS(totalSeconds) {
+        if (!totalSeconds) return "";
+        let mins = Math.floor(totalSeconds / 60);
+        let secs = totalSeconds % 60;
+        return (mins < 10 ? "0" + mins : mins) + ":" + (secs < 10 ? "0" + secs : secs);
     }
 
     function switchTab(id, btn) {
@@ -204,9 +206,12 @@
         return parseInt(str) || 0;
     }
 
+    // --- ส่วนดึงข้อมูล (ขากลับจาก Firebase) ---
     db.ref().on("value", (snapshot) => {
         const data = snapshot.val();
         if(!data) return;
+
+        // 1. ดึงค่าเซ็นเซอร์
         if(data.sensor) {
             document.getElementById('t-v').innerText = data.sensor.temp.toFixed(1) + "°";
             document.getElementById('h-v').innerText = data.sensor.hum.toFixed(0) + "%";
@@ -215,9 +220,27 @@
             document.getElementById('dot').style.color = "#4caf50";
             document.getElementById('status-text').innerText = "Online";
         }
+
+        // 2. ดึงสถานะสั่งงานมือ (Manual)
         if(data.control) {
             updateUI('A', data.control.pumpA.run);
             updateUI('B', data.control.pumpB.run);
+        }
+
+        // 3. ดึงค่าตั้งเวลา (Auto) มาหยอดลงในช่องกรอก (แก้ไขปัญหารีเซ็ต)
+        if(data.auto) {
+            ['A', 'B'].forEach(p => {
+                const config = data.auto[p];
+                const pL = p.toLowerCase();
+                if(config) {
+                    // ป้องกันการทับข้อมูลขณะที่ผู้ใช้กำลังพิมพ์ (เช็ค Focus)
+                    if(document.activeElement.id !== `${pL}-t1`) document.getElementById(`${pL}-t1`).value = config.time1 || "";
+                    if(document.activeElement.id !== `${pL}-t2`) document.getElementById(`${pL}-t2`).value = config.time2 || "";
+                    if(document.activeElement.id !== `${pL}-d1-input`) document.getElementById(`${pL}-d1-input`).value = secondsToMMSS(config.dur1);
+                    if(document.activeElement.id !== `${pL}-d2-input`) document.getElementById(`${pL}-d2-input`).value = secondsToMMSS(config.dur2);
+                    document.getElementById(`sw-${pL}`).checked = config.enabled || false;
+                }
+            });
         }
     });
 
@@ -254,7 +277,3 @@
 </script>
 </body>
 </html>
-
-
-
-
