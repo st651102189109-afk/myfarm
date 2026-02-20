@@ -36,7 +36,6 @@
         .panel { background: white; border-radius: 20px; padding: 15px; margin-bottom: 12px; box-shadow: 0 4px 10px rgba(0,0,0,0.05); border-left: 5px solid var(--primary); }
         .row { display: flex; justify-content: space-between; align-items: center; padding: 10px 0; border-bottom: 1px solid #f1f5f9; }
 
-        /* Input Group with hh:mm placeholder logic */
         .input-group { display: flex; align-items: center; background: #f8fafc; padding: 6px 10px; border-radius: 10px; border: 1px solid #e2e8f0; }
         input[type="time"] { border: none; background: transparent; font-family: 'Kanit'; font-size: 0.85rem; outline: none; width: 85px; }
         input[type="time"]::before { content: attr(placeholder); color: #cbd5e1; font-weight: 300; margin-right: 4px; }
@@ -95,7 +94,7 @@
                 <div class="input-group">
                     <input type="time" id="a-t1" placeholder="hh:mm" required onchange="saveConfig('A')">
                     <span class="divider">|</span>
-                    <input type="text" id="a-d1-input" class="dur-input" placeholder="mm:ss" inputmode="tel" oninput="this.value = this.value.replace(/[^0-9:]/g, '')" onchange="saveConfig('A')">
+                    <input type="text" id="a-d1-input" class="dur-input" placeholder="mm:ss" inputmode="tel" oninput="formatTime(this)" onchange="saveConfig('A')">
                 </div>
             </div>
             <div class="row" style="border:none;">
@@ -103,7 +102,7 @@
                 <div class="input-group">
                     <input type="time" id="a-t2" placeholder="hh:mm" required onchange="saveConfig('A')">
                     <span class="divider">|</span>
-                    <input type="text" id="a-d2-input" class="dur-input" placeholder="mm:ss" inputmode="tel" oninput="this.value = this.value.replace(/[^0-9:]/g, '')" onchange="saveConfig('A')">
+                    <input type="text" id="a-d2-input" class="dur-input" placeholder="mm:ss" inputmode="tel" oninput="formatTime(this)" onchange="saveConfig('A')">
                 </div>
             </div>
         </div>
@@ -118,7 +117,7 @@
                 <div class="input-group">
                     <input type="time" id="b-t1" placeholder="hh:mm" required onchange="saveConfig('B')">
                     <span class="divider">|</span>
-                    <input type="text" id="b-d1-input" class="dur-input" placeholder="mm:ss" inputmode="tel" oninput="this.value = this.value.replace(/[^0-9:]/g, '')" onchange="saveConfig('B')">
+                    <input type="text" id="b-d1-input" class="dur-input" placeholder="mm:ss" inputmode="tel" oninput="formatTime(this)" onchange="saveConfig('B')">
                 </div>
             </div>
             <div class="row" style="border:none;">
@@ -126,7 +125,7 @@
                 <div class="input-group">
                     <input type="time" id="b-t2" placeholder="hh:mm" required onchange="saveConfig('B')">
                     <span class="divider">|</span>
-                    <input type="text" id="b-d2-input" class="dur-input" placeholder="mm:ss" inputmode="tel" oninput="this.value = this.value.replace(/[^0-9:]/g, '')" onchange="saveConfig('B')">
+                    <input type="text" id="b-d2-input" class="dur-input" placeholder="mm:ss" inputmode="tel" oninput="formatTime(this)" onchange="saveConfig('B')">
                 </div>
             </div>
         </div>
@@ -139,9 +138,9 @@
                 <div id="light-a" class="status-light light-off"></div>
             </div>
             <div class="row" style="border:none;">
-                <span style="font-size:0.85rem;">ระบุเวลารดน้ำ</span>
+                <span style="font-size:0.85rem;">นาที : วินาที</span>
                 <div class="input-group">
-                    <input type="text" id="man-dur-a" class="dur-input" placeholder="mm:ss" inputmode="tel" oninput="this.value = this.value.replace(/[^0-9:]/g, '')" style="width:100px; font-size:1.1rem;">
+                    <input type="text" id="man-dur-a" class="dur-input" placeholder="mm:ss" inputmode="tel" oninput="formatTime(this)" style="width:100px; font-size:1.1rem;">
                 </div>
             </div>
             <button id="btn-a" class="btn-manual btn-on" onclick="manualControl('A')"><i class="fas fa-play"></i> เริ่มรดน้ำ A</button>
@@ -153,9 +152,9 @@
                 <div id="light-b" class="status-light light-off"></div>
             </div>
             <div class="row" style="border:none;">
-                <span style="font-size:0.85rem;">ระบุเวลารดน้ำ</span>
+                <span style="font-size:0.85rem;">นาที : วินาที</span>
                 <div class="input-group">
-                    <input type="text" id="man-dur-b" class="dur-input" placeholder="mm:ss" inputmode="tel" oninput="this.value = this.value.replace(/[^0-9:]/g, '')" style="width:100px; font-size:1.1rem;">
+                    <input type="text" id="man-dur-b" class="dur-input" placeholder="mm:ss" inputmode="tel" oninput="formatTime(this)" style="width:100px; font-size:1.1rem;">
                 </div>
             </div>
             <button id="btn-b" class="btn-manual btn-on" onclick="manualControl('B')"><i class="fas fa-play"></i> เริ่มรดน้ำ B</button>
@@ -172,6 +171,22 @@
     const firebaseConfig = { databaseURL: "https://smartfarmlv1-default-rtdb.asia-southeast1.firebasedatabase.app" };
     firebase.initializeApp(firebaseConfig);
     const db = firebase.database();
+
+    // --- ระบบจัดฟอร์แมต mm:ss อัตโนมัติ ---
+    function formatTime(input) {
+        // ลบอักขระที่ไม่ใช่ตัวเลขออก
+        let val = input.value.replace(/\D/g, '');
+        
+        // คุมไม่ให้เกิน 4 หลัก (2 นาที 2 วินาที)
+        if (val.length > 4) val = val.slice(0, 4);
+        
+        // จัดฟอร์แมต
+        if (val.length >= 3) {
+            input.value = val.slice(0, 2) + ':' + val.slice(2);
+        } else {
+            input.value = val;
+        }
+    }
 
     function switchTab(id, btn) {
         document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
